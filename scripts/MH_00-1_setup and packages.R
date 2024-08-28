@@ -16,9 +16,13 @@ pacman::p_load(
   devtools,        # loading github packages
   tidyverse,       # dplyr tidyr forcats stringr tibble ggplot2
   icpsrdata,       # import ICPSR data
+  foreign,         # import Stata data
+  data.table,      # need for rbindlist 
   haven,           #
   plyr,            #
+  srvyr,           # create weighted survey data
   sjPlot,          # generate a codebook
+  MESS,            # round percentages
   marginaleffects, # average marginal effects
   ggeffects,       # predicted probabilities
   effects,         # required for ggeffects

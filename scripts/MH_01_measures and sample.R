@@ -142,6 +142,59 @@ data <- data %>%
       goodwk  == "Poor"        ~ 0),
     # Good worker numeric
     gdwknum = as.numeric(goodwk),
+    # Happiness
+    happy = fct_case_when(
+      happy == 1 | happy == "NT HAPPY" | happy == "Not too happy"  | happy == "NT HAPPY:(1)" ~ "Not too happy",
+      happy == 2 | happy == "PRTY HPY" | happy == "Pretty happy"   | happy == "PRTY HPY:(2)" ~ "Pretty happy",
+      happy == 3 | happy == "VRY HPY"  | happy == "Very happy"     | happy == "VRY HPY:(3)"  ~ "Very happy",
+      TRUE                                                                                   ~  NA_character_),
+    # Life Satisfaction
+    lifesat_wtf = fct_case_when(
+      lifesat == 1 | lifesat == "COMP DIS " | lifesat == "Completely dissatisfied"    | lifesat == "COMP DIS:(1)"      ~ "Completely dissatisfied",
+      lifesat == 2 | lifesat == "QUITE DS"  | lifesat == "Quite dissatisfied"         | lifesat == "QUITE DS:(2)" | 
+        lifesat == "QUITE:(2)"  | lifesat == "QUITE DIS:(2)"                                                           ~ "Quite dissatisfied",
+      lifesat == 3 | lifesat == "SMWT DIS"  | lifesat == "Somewhat dissatisfied"      | lifesat == "SMWT DIS:(3)" | 
+        lifesat == "SOME DIS:(3)"                                                                                      ~ "Somewhat dissatisfied",
+      lifesat == 4 | lifesat == "NEITHER"   | lifesat == "Neither, or mixed feelings" | lifesat == "NEITHER:(4)"       ~ "Neither, or mixed feelings",
+      lifesat == 5 | lifesat == "SMWT SAT"  | lifesat == "Somewhat satisfied"         | lifesat == "SMWT SAT:(5)" | 
+        lifesat == "SOME DIS:(5)" | lifesat == "SOME SAT:(5)"                                                          ~ "Somewhat satisfied",
+      lifesat == 6 | lifesat == "QUITE ST"  | lifesat == "Quite satisfied"            | lifesat == "QUITE ST:(6)" | 
+        lifesat == "QUITE:(6)"   | lifesat == "QUITE SAT:(6)"                                                          ~ "Quite satisfied",
+      lifesat == 7 | lifesat == "COMP SAT"  | lifesat == "Completely satisfied"       | lifesat == "COMPLETE:(7)" | 
+        lifesat == "COMP SAT:(7)"                                                                                      ~ "Completely satisfied",
+      TRUE                                                                                                             ~  NA_character_),
+    # Meaning
+    meaning = fct_case_when(
+      meaning == "DISAGREE:(1)" ~ "Disagree",
+      meaning == "MOST DIS:(2)" ~ "Mostly disagree",
+      meaning == "NEITHER:(3)"  ~ "Neither",
+      meaning == "MOST AGR:(4)" ~ "Mostly agree",
+      meaning == "AGREE:(5)"    ~ "Agree",
+      TRUE                      ~  NA_character_),
+    # Enjoy Live
+    enjoy = fct_case_when(
+      enjoy == "DISAGREE:(1)" ~ "Disagree",
+      enjoy == "MOST DIS:(2)" ~ "Mostly disagree",
+      enjoy == "NEITHER:(3)"  ~ "Neither",
+      enjoy == "MOST AGR:(4)" ~ "Mostly agree",
+      enjoy == "AGREE:(5)"    ~ "Agree",
+      TRUE                    ~  NA_character_),
+    # Hopeless
+    hopeless = fct_case_when(
+      hopeless == "DISAGREE:(1)" ~ "Disagree",
+      hopeless == "MOST DIS:(2)" ~ "Mostly disagree",
+      hopeless == "NEITHER:(3)"  ~ "Neither",
+      hopeless == "MOST AGR:(4)" ~ "Mostly agree",
+      hopeless == "AGREE:(5)"    ~ "Agree",
+      TRUE                       ~  NA_character_),
+    # Good to be alive
+    alive = fct_case_when(
+      alive == "DISAGREE:(1)" ~ "Disagree",
+      alive == "MOST DIS:(2)" ~ "Mostly disagree",
+      alive == "NEITHER:(3)"  ~ "Neither",
+      alive == "MOST AGR:(4)" ~ "Mostly agree",
+      alive == "AGREE:(5)"    ~ "Agree",
+      TRUE                    ~  NA_character_),
     # Decades
     decade = fct_case_when(
       year < 1980 ~ "1970s",
@@ -208,13 +261,14 @@ data <- data %>%
     region = fct_case_when(
       region == 1 | region == "NE" | region == "NE:(1)"   | region == "NORTHEAST"     | region == "NORTHEAST:(1)" ~ "Northeast",
       region == 2 | region == "NC" | region == "NC:(2)"   | region == "NORTH CENTRAL" | region == "MIDWEST:(2)"   |
-        region == "NORTH CENTRL:(2)" | region == "NORTH CENTRAL:(2)"                                                ~ "Midwest",
+      region == "NORTH CENTRL:(2)" | region == "NORTH CENTRAL:(2)"                                                ~ "Midwest",
       region == 3 | region == "S"  | region == "S:(3)"    | region == "SOUTH"         | region == "SOUTH:(3)"     ~ "South",
       region == 4 | region == "W"  | region == "W:(4)"    | region == "WEST"          | region == "WEST:(4)"      ~ "West")) %>%
   select(svyweight, year, decade, 
          goodsp, gdspdum, gdspnum,
          goodpa, gdpadum, gdpanum,
          goodwk, gdwkdum, gdwknum,
+         happy, lifesat, meaning, enjoy, hopeless, alive,
          sex, race, racesex, momed, famstru, religion, region, tablet) 
 
 ### Add formatted level labels for plotting 

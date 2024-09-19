@@ -16,16 +16,22 @@ load(paste0(dataDir, "/mtf_form2.Rda"))
 data <- mtf_V2 %>%
   select(V5, ARCHIVE_WT, V1, V13, TABLET,             # Survey variables
          V2312, V2313, V2314,                         # Project specific
-         V2151, V2150, V2164,                         # Demographic (V2165 - momemp ! 2022)
+         V2208, V2311, V2616, V2617, V2618, V2619, 
+         V2433, V2434, V2435, V2436, V2437, V2438,
+         V2439, V2440,
+         V2150, V2151, V2164,                         # Demographic (V2165 - momemp ! 2022)
          V2169, V2155, V2156)           
 
 ## Rename Variables
 data <- dplyr::rename(data,      
-                      wt7611   = V5,     wt1222   = ARCHIVE_WT,  
-                      gdsp     = V2312,  gdpa     = V2313,  
-                      gdwk     = V2314,  
-                      year     = V1,     gender   = V2150,  
-                      raceeth  = V2151,  region   = V13,
+                      wt7611   = V5,     wt1222   = ARCHIVE_WT,  year     = V1, 
+                      gdsp     = V2312,  gdpa     = V2313,       gdwk     = V2314,  
+                      happy    = V2208,  lifesat  = V2311,       
+                      meaning  = V2616,  enjoy    = V2617,       hopeless = V2618,
+                      alive    = V2619,  posatt   = V2433,       worth    = V2434,
+                      welloth  = V2435,  satself  = V2436,       proud    = V2437,
+                      nogood   = V2438,  wrong    = V2439,       lifeuse  = V2440,
+                      gender   = V2150,  raceeth  = V2151,       region   = V13,
                       momed    = V2164,  religion = V2169,
                       father   = V2155,  mother = V2156)
 

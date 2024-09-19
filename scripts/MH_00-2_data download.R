@@ -49,6 +49,11 @@ icpsr_download(file_id = c(  7927,  7928,  7929,  7930,
 
 form2dta    <- list.files(path=dataDir, pattern = ".-0002-Data.dta$|.-0003-Data.dta$", recursive = TRUE) # create a list of Form 2 data files -- different folders based on the year
 mtf_F2_list <- lapply(file.path(dataDir, form2dta), read.dta) # turn the list into a list of dataframes
+
+# This other approach imports Stata data without the labels...
+#mtf_F2_list <- lapply(file.path(dataDir, form2dta), read_dta) # turn the list into a list of dataframes
+#mtf_F2_list <- lapply(mtf_F2_list, labelled::remove_val_labels)
+
 mtfF2       <- rbindlist(mtf_F2_list, use.names=TRUE, fill=TRUE) # Convert the list of data frames into one data frame
 mtf_V2      <- select(mtfF2, V1, V5, V13, ARCHIVE_WT, TABLET, starts_with("V2")) ## Keep only Form 2 variables
 mtf_V2      <- subset(mtf_V2, !is.na(V2151)) ## Keep only Form 2 survey respondents

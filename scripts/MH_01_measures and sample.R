@@ -15,8 +15,8 @@ load(paste0(dataDir, "/mtf_form2.Rda"))
 ## Load the data and create a new df containing only the variables of interest.  
 data <- mtf_V2 %>%
   select(V5, ARCHIVE_WT, V1, V13, TABLET,             # Survey variables
-         V2312, V2313, V2314,                         # Project specific
-         V2208, V2311, V2616, V2617, V2618, V2619, 
+         V2312, V2313, V2314, V2208, V2311,           # Project specific
+         V2616, V2617, V2618, V2619, V2620,
          V2433, V2434, V2435, V2436, V2437, V2438,
          V2439, V2440,
          V2150, V2151, V2164,                         # Demographic (V2165 - momemp ! 2022)
@@ -26,7 +26,7 @@ data <- mtf_V2 %>%
 data <- dplyr::rename(data,      
                       wt7611   = V5,     wt1222   = ARCHIVE_WT,  year     = V1, 
                       gdsp     = V2312,  gdpa     = V2313,       gdwk     = V2314,  
-                      happy    = V2208,  lifesat  = V2311,       
+                      happy    = V2208,  lifesat  = V2311,       anxiety  = V2620, 
                       meaning  = V2616,  enjoy    = V2617,       hopeless = V2618,
                       alive    = V2619,  posatt   = V2433,       worth    = V2434,
                       welloth  = V2435,  satself  = V2436,       proud    = V2437,
@@ -91,7 +91,7 @@ data <- data %>%
 
 data <- data %>%
   mutate(
-    # Good spouse
+    # HOW GD AS SPOUSE
     goodsp = fct_case_when(
       gdsp == 1 | gdsp == "POOR"     | gdsp == "Poor"       | gdsp == "POOR:(1)"                               ~ "Poor",
       gdsp == 2 | gdsp == "NOT GOOD" | gdsp == "Not so good"| gdsp == "NOT GOOD:(2)"                           ~ "Not so good",
@@ -108,7 +108,7 @@ data <- data %>%
       goodsp  == "Poor"        ~ 0),
     # Good spouse numeric
     gdspnum = as.numeric(goodsp),
-    # Good parent
+    # HOW GD AS PARENT
     goodpa = fct_case_when(
       gdpa == 1 | gdpa == "POOR"     | gdpa == "Poor"       | gdpa == "POOR:(1)"                               ~ "Poor",
       gdpa == 2 | gdpa == "NOT GOOD" | gdpa == "Not so good"| gdpa == "NOT GOOD:(2)"                           ~ "Not so good",
@@ -125,7 +125,7 @@ data <- data %>%
       goodpa  == "Poor"        ~ 0),
     # Good parent numeric
     gdpanum = as.numeric(goodpa),
-    # Good worker
+    # HOW GD AS WORKER
     goodwk = fct_case_when(
       gdwk == 1 | gdwk == "POOR"     | gdwk == "Poor"       | gdwk == "POOR:(1)"                               ~ "Poor",
       gdwk == 2 | gdwk == "NOT GOOD" | gdwk == "Not so good"| gdwk == "NOT GOOD:(2)"                           ~ "Not so good",
@@ -142,14 +142,14 @@ data <- data %>%
       goodwk  == "Poor"        ~ 0),
     # Good worker numeric
     gdwknum = as.numeric(goodwk),
-    # Happiness
+    # VRY HPY THS DAYS
     happy = fct_case_when(
       happy == 1 | happy == "NT HAPPY" | happy == "Not too happy"  | happy == "NT HAPPY:(1)" ~ "Not too happy",
       happy == 2 | happy == "PRTY HPY" | happy == "Pretty happy"   | happy == "PRTY HPY:(2)" ~ "Pretty happy",
       happy == 3 | happy == "VRY HPY"  | happy == "Very happy"     | happy == "VRY HPY:(3)"  ~ "Very happy",
       TRUE                                                                                   ~  NA_character_),
-    # Life Satisfaction
-    lifesat_wtf = fct_case_when(
+    # CMP SATFD W/LIFE
+    lifesat = fct_case_when(
       lifesat == 1 | lifesat == "COMP DIS " | lifesat == "Completely dissatisfied"    | lifesat == "COMP DIS:(1)"      ~ "Completely dissatisfied",
       lifesat == 2 | lifesat == "QUITE DS"  | lifesat == "Quite dissatisfied"         | lifesat == "QUITE DS:(2)" | 
         lifesat == "QUITE:(2)"  | lifesat == "QUITE DIS:(2)"                                                           ~ "Quite dissatisfied",
@@ -163,7 +163,7 @@ data <- data %>%
       lifesat == 7 | lifesat == "COMP SAT"  | lifesat == "Completely satisfied"       | lifesat == "COMPLETE:(7)" | 
         lifesat == "COMP SAT:(7)"                                                                                      ~ "Completely satisfied",
       TRUE                                                                                                             ~  NA_character_),
-    # Meaning
+    # LIFE MEANINGLESS
     meaning = fct_case_when(
       meaning == "DISAGREE:(1)" ~ "Disagree",
       meaning == "MOST DIS:(2)" ~ "Mostly disagree",
@@ -171,7 +171,7 @@ data <- data %>%
       meaning == "MOST AGR:(4)" ~ "Mostly agree",
       meaning == "AGREE:(5)"    ~ "Agree",
       TRUE                      ~  NA_character_),
-    # Enjoy Live
+    # I ENJOY LIFE
     enjoy = fct_case_when(
       enjoy == "DISAGREE:(1)" ~ "Disagree",
       enjoy == "MOST DIS:(2)" ~ "Mostly disagree",
@@ -179,7 +179,7 @@ data <- data %>%
       enjoy == "MOST AGR:(4)" ~ "Mostly agree",
       enjoy == "AGREE:(5)"    ~ "Agree",
       TRUE                    ~  NA_character_),
-    # Hopeless
+    # FUTURE HOPELESS
     hopeless = fct_case_when(
       hopeless == "DISAGREE:(1)" ~ "Disagree",
       hopeless == "MOST DIS:(2)" ~ "Mostly disagree",
@@ -187,7 +187,7 @@ data <- data %>%
       hopeless == "MOST AGR:(4)" ~ "Mostly agree",
       hopeless == "AGREE:(5)"    ~ "Agree",
       TRUE                       ~  NA_character_),
-    # Good to be alive
+    # GOOD TO BE ALIVE
     alive = fct_case_when(
       alive == "DISAGREE:(1)" ~ "Disagree",
       alive == "MOST DIS:(2)" ~ "Mostly disagree",
@@ -195,6 +195,78 @@ data <- data %>%
       alive == "MOST AGR:(4)" ~ "Mostly agree",
       alive == "AGREE:(5)"    ~ "Agree",
       TRUE                    ~  NA_character_),
+    # OFTEN FEEL ANXIOUS
+    anxiety = fct_case_when(
+      anxiety == "DISAGREE:(1)" ~ "Disagree",
+      anxiety == "MOST DIS:(2)" ~ "Mostly disagree",
+      anxiety == "NEITHER:(3)"  ~ "Neither",
+      anxiety == "MOST AGR:(4)" ~ "Mostly agree",
+      anxiety == "AGREE:(5)"    ~ "Agree",
+      TRUE                      ~  NA_character_),
+    # POS ATT TWD SELF
+    posatt = fct_case_when(
+      posatt == 1 | posatt == "DISAGREE" | posatt == "Disagree"        | posatt == "DISAGREE:(1)"    ~ "Disagree",
+      posatt == 2 | posatt == "MOST DIS" | posatt == "Mostly disagree" | posatt == "MOST DIS:(2)"    ~ "Mostly disagree",
+      posatt == 3 | posatt == "NEITHER"  | posatt == "Neither"         | posatt == "NEITHER:(3)"     ~ "Neither",
+      posatt == 4 | posatt == "MOST AGR" | posatt == "Mostly agree"    | posatt == "MOST AGR:(4)"    ~ "Mostly agree",
+      posatt == 5 | posatt == "AGREE"    | posatt == "Agree"           | posatt == "AGREE:(5)"       ~ "Agree",
+      TRUE                                                                                           ~  NA_character_),
+    # AM PRSN OF WORTH
+    worth = fct_case_when(
+      worth == 1 | worth == "DISAGREE" | worth == "Disagree"        | worth == "DISAGREE:(1)"    ~ "Disagree",
+      worth == 2 | worth == "MOST DIS" | worth == "Mostly disagree" | worth == "MOST DIS:(2)"    ~ "Mostly disagree",
+      worth == 3 | worth == "NEITHER"  | worth == "Neither"         | worth == "NEITHER:(3)"     ~ "Neither",
+      worth == 4 | worth == "MOST AGR" | worth == "Mostly agree"    | worth == "MOST AGR:(4)"    ~ "Mostly agree",
+      worth == 5 | worth == "AGREE"    | worth == "Agree"           | worth == "AGREE:(5)"       ~ "Agree",
+      TRUE                                                                                       ~  NA_character_),
+    # DO WELL AS OTHRS
+    welloth = fct_case_when(
+      welloth == 1 | welloth == "DISAGREE" | welloth == "Disagree"        | welloth == "DISAGREE:(1)"    ~ "Disagree",
+      welloth == 2 | welloth == "MOST DIS" | welloth == "Mostly disagree" | welloth == "MOST DIS:(2)"    ~ "Mostly disagree",
+      welloth == 3 | welloth == "NEITHER"  | welloth == "Neither"         | welloth == "NEITHER:(3)"     ~ "Neither",
+      welloth == 4 | welloth == "MOST AGR" | welloth == "Mostly agree"    | welloth == "MOST AGR:(4)"    ~ "Mostly agree",
+      welloth == 5 | welloth == "AGREE"    | welloth == "Agree"           | welloth == "AGREE:(5)"       ~ "Agree",
+      TRUE                                                                                               ~  NA_character_),
+    # SATISFD W MYSELF
+    satself = fct_case_when(
+      satself == 1 | satself == "DISAGREE" | satself == "Disagree"        | satself == "DISAGREE:(1)"    ~ "Disagree",
+      satself == 2 | satself == "MOST DIS" | satself == "Mostly disagree" | satself == "MOST DIS:(2)"    ~ "Mostly disagree",
+      satself == 3 | satself == "NEITHER"  | satself == "Neither"         | satself == "NEITHER:(3)"     ~ "Neither",
+      satself == 4 | satself == "MOST AGR" | satself == "Mostly agree"    | satself == "MOST AGR:(4)"    ~ "Mostly agree",
+      satself == 5 | satself == "AGREE"    | satself == "Agree"           | satself == "AGREE:(5)"       ~ "Agree",
+      TRUE                                                                                               ~  NA_character_),
+    # -MUCH TO B PROUD
+    proud = fct_case_when(
+      proud == 1 | proud == "DISAGREE" | proud == "Disagree"        | proud == "DISAGREE:(1)"    ~ "Disagree",
+      proud == 2 | proud == "MOST DIS" | proud == "Mostly disagree" | proud == "MOST DIS:(2)"    ~ "Mostly disagree",
+      proud == 3 | proud == "NEITHER"  | proud == "Neither"         | proud == "NEITHER:(3)"     ~ "Neither",
+      proud == 4 | proud == "MOST AGR" | proud == "Mostly agree"    | proud == "MOST AGR:(4)"    ~ "Mostly agree",
+      proud == 5 | proud == "AGREE"    | proud == "Agree"           | proud == "AGREE:(5)"       ~ "Agree",
+      TRUE                                                                                       ~  NA_character_),
+    # I AM NO GOOD
+    nogood = fct_case_when(
+      nogood == 1 | nogood == "DISAGREE" | nogood == "Disagree"        | nogood == "DISAGREE:(1)"    ~ "Disagree",
+      nogood == 2 | nogood == "MOST DIS" | nogood == "Mostly disagree" | nogood == "MOST DIS:(2)"    ~ "Mostly disagree",
+      nogood == 3 | nogood == "NEITHER"  | nogood == "Neither"         | nogood == "NEITHER:(3)"     ~ "Neither",
+      nogood == 4 | nogood == "MOST AGR" | nogood == "Mostly agree"    | nogood == "MOST AGR:(4)"    ~ "Mostly agree",
+      nogood == 5 | nogood == "AGREE"    | nogood == "Agree"           | nogood == "AGREE:(5)"       ~ "Agree",
+      TRUE                                                                                           ~  NA_character_),
+    # I DO WRONG THING
+    wrong = fct_case_when(
+      wrong == 1 | wrong == "DISAGREE" | wrong == "Disagree"        | wrong == "DISAGREE:(1)"    ~ "Disagree",
+      wrong == 2 | wrong == "MOST DIS" | wrong == "Mostly disagree" | wrong == "MOST DIS:(2)"    ~ "Mostly disagree",
+      wrong == 3 | wrong == "NEITHER"  | wrong == "Neither"         | wrong == "NEITHER:(3)"     ~ "Neither",
+      wrong == 4 | wrong == "MOST AGR" | wrong == "Mostly agree"    | wrong == "MOST AGR:(4)"    ~ "Mostly agree",
+      wrong == 5 | wrong == "AGREE"    | wrong == "Agree"           | wrong == "AGREE:(5)"       ~ "Agree",
+      TRUE                                                                                       ~  NA_character_),
+    # MY LIFE NT USEFL
+    lifeuse = fct_case_when(
+      lifeuse == 1 | lifeuse == "DISAGREE" | lifeuse == "Disagree"        | lifeuse == "DISAGREE:(1)"    ~ "Disagree",
+      lifeuse == 2 | lifeuse == "MOST DIS" | lifeuse == "Mostly disagree" | lifeuse == "MOST DIS:(2)"    ~ "Mostly disagree",
+      lifeuse == 3 | lifeuse == "NEITHER"  | lifeuse == "Neither"         | lifeuse == "NEITHER:(3)"     ~ "Neither",
+      lifeuse == 4 | lifeuse == "MOST AGR" | lifeuse == "Mostly agree"    | lifeuse == "MOST AGR:(4)"    ~ "Mostly agree",
+      lifeuse == 5 | lifeuse == "AGREE"    | lifeuse == "Agree"           | lifeuse == "AGREE:(5)"       ~ "Agree",
+      TRUE                                                                                               ~  NA_character_),
     # Decades
     decade = fct_case_when(
       year < 1980 ~ "1970s",
@@ -233,7 +305,7 @@ data <- data %>%
       momed == "4" | momed == "SOME CLG" | momed == "SOME CLG:(4)" | momed ==  "Some college"                      ~ "No college degree",
       momed == "5" | momed == "CLG GRAD" | momed == "CLG GRAD:(5)" | momed ==  "Completed college"                 |
       momed == "6" | momed == "GRAD SCH" | momed == "GRAD SCH:(6)" | momed ==  "Graduate or professional school"   ~ "Completed college",
-      momed == "7" | momed == "MISSING"  | momed == "DK:(7)"       | momed ==  "Don't know, or does not apply"     | # These don't match but make missing so doesn't matter
+      momed == "7" | momed == "MISSING"  | momed == "DK:(7)"       | momed ==  "Don't know, or does not apply"     | # These don't match but missing so doesn't matter
         TRUE                                                                                                         ~  NA_character_ ),
     # Religiosity
     religion = fct_case_when(
@@ -268,7 +340,10 @@ data <- data %>%
          goodsp, gdspdum, gdspnum,
          goodpa, gdpadum, gdpanum,
          goodwk, gdwkdum, gdwknum,
-         happy, lifesat, meaning, enjoy, hopeless, alive,
+         happy, lifesat, # Positive Affect (1976+)
+         posatt, worth, welloth, satself, # Self-esteem (1984+)
+         proud, nogood, wrong, lifeuse, # Self-derogation (1984+)
+         meaning, enjoy, hopeless, alive, anxiety, # Depression & Anxiety (2022+)
          sex, race, racesex, momed, famstru, religion, region, tablet) 
 
 ### Add formatted level labels for plotting 

@@ -7,8 +7,28 @@
 data_long <- data %>%
   pivot_longer(
     cols = c(goodsp, goodpa, goodwk),
-    names_to = "good",
-    values_to = "scale")
+    names_to = "role",
+    values_to = "good")
+
+data_longer <- data_long %>%
+  pivot_longer(
+    cols = c(happy, lifesat,
+             posatt, worth, welloth, satself,
+             proud, nogood, wrong, lifeuse,
+             meaning, enjoy, hopeless, alive, anxiety),
+    names_to = "attribute",
+    values_to = "response") %>%
+  mutate(index = fct_case_when(
+    attribute == "happy"    | attribute == "lifesat"                                                   ~ "Positive",
+    attribute == "posatt"   | attribute == "worth"  | attribute == "welloth"  | attribute == "satself" ~ "Esteem",
+    attribute == "proud"    | attribute == "nogood" | attribute == "wrong"    | attribute == "lifeuse" ~ "Derogation",
+    attribute == "meaning"  | attribute == "enjoy"  | attribute == "hopeless" | attribute == "alive"   ~ "Depression",
+    attribute == "anxiety"                                                                             ~ "Anxiety",
+    TRUE                                                                                               ~  NA_character_))
+
+#meaning, enjoy, hopeless, alive, anxiety, # Depression & Anxiety (2022+)
+
+table(data_longer$response, data_longer$attribute)
 
 # Averages
 avg_sp <- mtf_svy %>%
@@ -69,9 +89,9 @@ prop_sp$cat    <- "Spouse"
 prop_pa$cat    <- "Parent" 
 prop_wk$cat    <- "Worker" 
 
-colnames(prop_sp)[colnames(prop_sp)=="goodsp"] <- "scale"
-colnames(prop_pa)[colnames(prop_pa)=="goodpa"] <- "scale"
-colnames(prop_wk)[colnames(prop_wk)=="goodwk"] <- "scale"
+colnames(prop_sp)[colnames(prop_sp)=="goodsp"] <- "good"
+colnames(prop_pa)[colnames(prop_pa)=="goodpa"] <- "good"
+colnames(prop_wk)[colnames(prop_wk)=="goodwk"] <- "good"
 
 
 df_prop <- rbind(prop_sp, prop_pa, prop_wk)
@@ -102,7 +122,7 @@ ggsave(file.path(here(outDir, figDir),"averages.png"), p1, width = 6.5, height =
 p2 <- df_prop %>%
   ggplot(aes(y = decade, x = vals, fill = cat, ymin = vals_low, ymax = vals_upp)) +
   geom_col(position = position_dodge()) +
-  facet_grid(vars(scale), vars(fct_rev(cat))) +
+  facet_grid(vars(good), vars(fct_rev(cat))) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
   # stat_smooth(method = "lm", size = .5, fill = "grey80") +
   scale_y_discrete(limits = rev) +

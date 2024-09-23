@@ -27,6 +27,8 @@ pacman::p_load(
   ggeffects,       # predicted probabilities
   effects,         # required for ggeffects
   scales,          # percentages for ggplots axes
+  psych,           # alphas
+  ggcorrplot,      # correlation matrix plot
   officer,         # producing word output
   modelsummary,    # producing word tables
   flextable,       # producing word output

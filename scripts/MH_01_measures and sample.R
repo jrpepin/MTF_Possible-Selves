@@ -14,13 +14,15 @@ load(paste0(dataDir, "/mtf_form2.Rda"))
 
 ## Load the data and create a new df containing only the variables of interest.  
 data <- mtf_V2 %>%
-  select(V5, ARCHIVE_WT, V1, V13, TABLET,             # Survey variables
+  # Create an ID variable
+  mutate(ID = row_number()) %>%
+  select(ID, V5, ARCHIVE_WT, V1, V13, TABLET,         # Survey variables
          V2312, V2313, V2314, V2208, V2311,           # Project specific
          V2616, V2617, V2618, V2619, V2620,
          V2433, V2434, V2435, V2436, V2437, V2438,
          V2439, V2440,
          V2150, V2151, V2164,                         # Demographic (V2165 - momemp ! 2022)
-         V2169, V2155, V2156)           
+         V2169, V2155, V2156)
 
 ## Rename Variables
 data <- dplyr::rename(data,      
@@ -336,7 +338,7 @@ data <- data %>%
       region == "NORTH CENTRL:(2)" | region == "NORTH CENTRAL:(2)"                                                ~ "Midwest",
       region == 3 | region == "S"  | region == "S:(3)"    | region == "SOUTH"         | region == "SOUTH:(3)"     ~ "South",
       region == 4 | region == "W"  | region == "W:(4)"    | region == "WEST"          | region == "WEST:(4)"      ~ "West")) %>%
-  select(svyweight, year, decade, 
+  select(ID, svyweight, year, decade, 
          goodsp, gdspdum, gdspnum,
          goodpa, gdpadum, gdpanum,
          goodwk, gdwkdum, gdwknum,
@@ -371,9 +373,20 @@ data <- data %>%
       goodwk == "Very good"   ~ "Very\ngood",
       TRUE                    ~  NA_character_ )))
 
-glimpse(data)
+# Create numeric & scaled variables
+data <- data %>%
+  # Make numeric variables
+  mutate_at(c("posatt", "worth", "welloth", "satself",
+              "proud", "nogood", "wrong", "lifeuse"), list(N = as.numeric)) %>%
+  # Standardize new variables
+  mutate(across(contains('_N'), scale)) %>%
+  # Back to numeric variable
+  mutate(across(contains('_N'), as.numeric)) %>%
+  # Round to 2 decimial places
+  mutate(across(contains('_N'), round, 2))
 
 # Sample -----------------------------------------------------------------------
+glimpse(data)
 
 ## Original sample size
 count(data)
@@ -383,11 +396,12 @@ colSums(is.na(data))
 
 data <- data %>%
   # exclude cases missing on DVs
-  drop_na(goodsp) %>%
-  drop_na(goodpa) %>%
-  drop_na(goodwk) %>%
+  drop_na(c(goodwk, goodsp, goodpa)) %>%
   # exclude cases missing on key IV
-  drop_na(sex) 
+  drop_na(c(sex)) %>%
+  drop_na(c(happy, lifesat, 
+            posatt, worth, welloth, satself, 
+            proud, nogood, wrong, lifeuse))
 
 # Analytic sample size
 count(data)
@@ -396,30 +410,10 @@ counts <- data %>%
   group_by(year) %>%
   count()
 
-## Create survey data 
+# Create survey data -----------------------------------------------------------
 mtf_svy <- data %>%
   # weight data
   as_survey_design(id = 1,
                    weights = svyweight)
 
-## Create table
-tabA <- mtf_svy %>%
-  select(c(goodsp, goodpa, goodwk, sex, race, momed)) %>%
-  tbl_svysummary(
-    label = list(goodsp   ~ "Good as a spouse",
-                 goodpa   ~ "Good as a parent",
-                 goodwk   ~ "Good as a worker",
-                 sex      ~ "Gender",
-                 race     ~ "Race",
-                 momed    ~ "Mothers' education"))  %>%
-  modify_header(
-    label = '**Variable**',
-    stat_0 = '**N (unweighted) = 102212**') %>%
-  modify_caption("Weighted statistics of the pooled analytic sample") %>%
-  as_flex_table() 
-#  add_footer_lines("notes")
-
-tabA # show table
-
-save_as_docx(tabA, path = file.path(outDir, "tabA.docx"))
 

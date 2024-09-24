@@ -382,7 +382,7 @@ data <- data %>%
   mutate(across(contains('_N'), scale)) %>%
   # Back to numeric variable
   mutate(across(contains('_N'), as.numeric)) %>%
-  # Round to 2 decimial places
+  # Round to 2 decimal places
   mutate(across(contains('_N'), round, 2))
 
 # Sample -----------------------------------------------------------------------

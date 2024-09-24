@@ -5,7 +5,7 @@
 #-------------------------------------------------------------------------------
 
 
-# Create table 01 -------------------------------------------------------------
+# Create table 01 --------------------------------------------------------------
 tabA <- mtf_svy %>%
   select(c(goodsp, goodpa, goodwk, sex, race, momed)) %>%
   tbl_svysummary(
@@ -36,11 +36,29 @@ p0
 
 ggsave(file.path(here(outDir, figDir),"alphas.png"), p0, width = 6.5, height = 6.5, dpi = 300, bg = 'white')
 
-data %>%
+# Generate the alphas
+esteem <- data %>%
   select('posatt_N', 'worth_N', 'welloth_N', 'satself_N') %>%
-  drop_na() %>% # how many does this drop??
   cov() %>%
   psych::alpha()
+
+derogation <- data %>%
+  select('proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N') %>%
+  cov() %>%
+  psych::alpha()
+
+both <- data %>%
+  select('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
+         'proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N') %>%
+  cov() %>%
+  psych::alpha(check.keys = TRUE) # this auto reverse codes the derogation items
+
+index <- c('esteem', 'derogation', 'both')
+alphas <- c(esteem$total$raw_alpha, derogation$total$raw_alpha, both$total$raw_alpha)
+alpha_df <- data.frame(index, alphas)
+alpha_df$alphas <- round(alpha_df$alphas, digits = 2)
+write_xlsx(alpha_df, path = file.path(outDir, "alphas.xlsx"))
+
 
 # Averages
 avg_sp <- mtf_svy %>%

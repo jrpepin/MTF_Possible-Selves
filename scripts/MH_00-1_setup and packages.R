@@ -31,6 +31,7 @@ pacman::p_load(
   ggcorrplot,      # correlation matrix plot
   officer,         # producing word output
   modelsummary,    # producing word tables
+  writexl,         # exporting df to excel
   flextable,       # producing word output
   gt,              # tables with gt formatting
   pandoc,          # word docs from modelsummary

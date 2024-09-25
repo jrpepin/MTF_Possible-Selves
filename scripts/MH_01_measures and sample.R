@@ -94,7 +94,7 @@ data <- data %>%
 data <- data %>%
   mutate(
     # HOW GD AS SPOUSE
-    goodsp = fct_case_when(
+    gdsp = fct_case_when(
       gdsp == 1 | gdsp == "POOR"     | gdsp == "Poor"       | gdsp == "POOR:(1)"                               ~ "Poor",
       gdsp == 2 | gdsp == "NOT GOOD" | gdsp == "Not so good"| gdsp == "NOT GOOD:(2)"                           ~ "Not so good",
       gdsp == 3 | gdsp == "FRLY GD"  | gdsp == "Fairly good"| gdsp == "FRLY GD:(3)"  | gdsp == "FAIR GOOD:(3)" ~ "Fairly good",
@@ -102,16 +102,16 @@ data <- data %>%
       gdsp == 5 | gdsp == "VRY GOOD" | gdsp == "Very good"  | gdsp == "VRY GOOD:(5)"                           ~ "Very good",
       TRUE                                                                                                     ~  NA_character_),
     # Good spouse dummy
-    gdspdum = fct_case_when(
-      goodsp  == "Very good"   |
-      goodsp  == "Good"        |
-      goodsp  == "Fairly good" ~ 1,
-      goodsp  == "Not so good" |
-      goodsp  == "Poor"        ~ 0),
+    gdsp_dum = fct_case_when(
+      gdsp  == "Very good"   |
+      gdsp  == "Good"        |
+      gdsp  == "Fairly good" ~ 1,
+      gdsp  == "Not so good" |
+      gdsp  == "Poor"        ~ 0),
     # Good spouse numeric
-    gdspnum = as.numeric(goodsp),
+    gdsp_num = as.numeric(gdsp),
     # HOW GD AS PARENT
-    goodpa = fct_case_when(
+    gdpa = fct_case_when(
       gdpa == 1 | gdpa == "POOR"     | gdpa == "Poor"       | gdpa == "POOR:(1)"                               ~ "Poor",
       gdpa == 2 | gdpa == "NOT GOOD" | gdpa == "Not so good"| gdpa == "NOT GOOD:(2)"                           ~ "Not so good",
       gdpa == 3 | gdpa == "FRLY GD"  | gdpa == "Fairly good"| gdpa == "FRLY GD:(3)"  | gdpa == "FAIR GOOD:(3)" ~ "Fairly good",
@@ -119,16 +119,16 @@ data <- data %>%
       gdpa == 5 | gdpa == "VRY GOOD" | gdpa == "Very good"  | gdpa == "VRY GOOD:(5)"                           ~ "Very good",
       TRUE                                                                                                     ~  NA_character_),
     # Good parent dummy
-    gdpadum = fct_case_when(
-      goodpa  == "Very good"   |
-      goodpa  == "Good"        |
-      goodpa  == "Fairly good" ~ 1,
-      goodpa  == "Not so good" |
-      goodpa  == "Poor"        ~ 0),
+    gdpa_dum = fct_case_when(
+      gdpa  == "Very good"   |
+      gdpa  == "Good"        |
+      gdpa  == "Fairly good" ~ 1,
+      gdpa  == "Not so good" |
+      gdpa  == "Poor"        ~ 0),
     # Good parent numeric
-    gdpanum = as.numeric(goodpa),
+    gdpa_num = as.numeric(gdpa),
     # HOW GD AS WORKER
-    goodwk = fct_case_when(
+    gdwk = fct_case_when(
       gdwk == 1 | gdwk == "POOR"     | gdwk == "Poor"       | gdwk == "POOR:(1)"                               ~ "Poor",
       gdwk == 2 | gdwk == "NOT GOOD" | gdwk == "Not so good"| gdwk == "NOT GOOD:(2)"                           ~ "Not so good",
       gdwk == 3 | gdwk == "FRLY GD"  | gdwk == "Fairly good"| gdwk == "FRLY GD:(3)"  | gdwk == "FAIR GOOD:(3)" ~ "Fairly good",
@@ -136,14 +136,14 @@ data <- data %>%
       gdwk == 5 | gdwk == "VRY GOOD" | gdwk == "Very good"  | gdwk == "VRY GOOD:(5)"                           ~ "Very good",
       TRUE                                                                                                     ~  NA_character_),
     # Good worker dummy
-    gdwkdum = fct_case_when(
-      goodwk  == "Very good"   |
-      goodwk  == "Good"        |
-      goodwk  == "Fairly good" ~ 1,
-      goodwk  == "Not so good" |
-      goodwk  == "Poor"        ~ 0),
+    gdwk_dum = fct_case_when(
+      gdwk  == "Very good"   |
+      gdwk  == "Good"        |
+      gdwk  == "Fairly good" ~ 1,
+      gdwk  == "Not so good" |
+      gdwk  == "Poor"        ~ 0),
     # Good worker numeric
-    gdwknum = as.numeric(goodwk),
+    gdwk_num = as.numeric(gdwk),
     # VRY HPY THS DAYS
     happy = fct_case_when(
       happy == 1 | happy == "NT HAPPY" | happy == "Not too happy"  | happy == "NT HAPPY:(1)" ~ "Not too happy",
@@ -339,9 +339,9 @@ data <- data %>%
       region == 3 | region == "S"  | region == "S:(3)"    | region == "SOUTH"         | region == "SOUTH:(3)"     ~ "South",
       region == 4 | region == "W"  | region == "W:(4)"    | region == "WEST"          | region == "WEST:(4)"      ~ "West")) %>%
   select(ID, svyweight, year, decade, 
-         goodsp, gdspdum, gdspnum,
-         goodpa, gdpadum, gdpanum,
-         goodwk, gdwkdum, gdwknum,
+         gdsp, gdsp_dum, gdsp_num,
+         gdpa, gdpa_dum, gdpa_num,
+         gdwk, gdwk_dum, gdwk_num,
          happy, lifesat, # Positive Affect (1976+)
          posatt, worth, welloth, satself, # Self-esteem (1984+)
          proud, nogood, wrong, lifeuse, # Self-derogation (1984+)
@@ -351,39 +351,49 @@ data <- data %>%
 ### Add formatted level labels for plotting 
 data <- data %>%
   mutate(
-    goodsp_lbl = as_factor(case_when(
-      goodsp == "Poor"        ~ "Poor",     
-      goodsp == "Not so good" ~ "Not so\ngood",
-      goodsp == "Fairly good" ~ "Fairly\ngood",
-      goodsp == "Good"        ~ "Good",
-      goodsp == "Very good"   ~ "Very\ngood",
+    gdsp_lbl = as_factor(case_when(
+      gdsp == "Poor"        ~ "Poor",     
+      gdsp == "Not so good" ~ "Not so\ngood",
+      gdsp == "Fairly good" ~ "Fairly\ngood",
+      gdsp == "Good"        ~ "Good",
+      gdsp == "Very good"   ~ "Very\ngood",
       TRUE                    ~  NA_character_ )),
-    goodpa_lbl = as_factor(case_when(
-      goodpa == "Poor"        ~ "Poor",     
-      goodpa == "Not so good" ~ "Not so\ngood",
-      goodpa == "Fairly good" ~ "Fairly\ngood",
-      goodpa == "Good"        ~ "Good",
-      goodpa == "Very good"   ~ "Very\ngood",
+    gdpa_lbl = as_factor(case_when(
+      gdpa == "Poor"        ~ "Poor",     
+      gdpa == "Not so good" ~ "Not so\ngood",
+      gdpa == "Fairly good" ~ "Fairly\ngood",
+      gdpa == "Good"        ~ "Good",
+      gdpa == "Very good"   ~ "Very\ngood",
       TRUE                    ~  NA_character_ )),
-    goodwk_lbl = as_factor(case_when(
-      goodwk == "Poor"        ~ "Poor",     
-      goodwk == "Not so good" ~ "Not so\ngood",
-      goodwk == "Fairly good" ~ "Fairly\ngood",
-      goodwk == "Good"        ~ "Good",
-      goodwk == "Very good"   ~ "Very\ngood",
+    gdwk_lbl = as_factor(case_when(
+      gdwk == "Poor"        ~ "Poor",     
+      gdwk == "Not so good" ~ "Not so\ngood",
+      gdwk == "Fairly good" ~ "Fairly\ngood",
+      gdwk == "Good"        ~ "Good",
+      gdwk == "Very good"   ~ "Very\ngood",
       TRUE                    ~  NA_character_ )))
 
 # Create numeric & scaled variables
 data <- data %>%
   # Make numeric variables
-  mutate_at(c("posatt", "worth", "welloth", "satself",
+  mutate_at(c("happy", "lifesat", "posatt", "worth", "welloth", "satself",
               "proud", "nogood", "wrong", "lifeuse"), list(N = as.numeric)) %>%
   # Standardize new variables
-  mutate(across(contains('_N'), scale)) %>%
+  mutate(across(
+    .cols = contains('_N'), 
+    .fns = scale,
+    .names = "{.col}_std")) %>%
   # Back to numeric variable
   mutate(across(contains('_N'), as.numeric)) %>%
   # Round to 2 decimal places
-  mutate(across(contains('_N'), round, 2))
+  mutate(across(contains('_N_std'), round, 2))
+
+new_col_order <- sort(names(data))
+
+data %>% 
+  relocate(
+    ID, svyweight, year, decade, starts_with("gd"), all_of(new_col_order)) %>%
+  head()
 
 # Sample -----------------------------------------------------------------------
 glimpse(data)
@@ -396,7 +406,7 @@ colSums(is.na(data))
 
 data <- data %>%
   # exclude cases missing on DVs
-  drop_na(c(goodwk, goodsp, goodpa)) %>%
+  drop_na(c(gdwk, gdsp, gdpa)) %>%
   # exclude cases missing on key IV
   drop_na(c(sex)) %>%
   drop_na(c(happy, lifesat, 
@@ -409,6 +419,76 @@ count(data)
 counts <- data %>%
   group_by(year) %>%
   count()
+
+## Construct Scales ------------------------------------------------------------
+### make after drop missing obvs
+
+cor_matrix <- cor(data[, c('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
+                           'proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N')], use = "pairwise.complete.obs")
+p0 <- ggcorrplot(cor_matrix, type = "lower", lab = TRUE)
+
+p0
+
+ggsave(file.path(here(outDir, figDir),"alphas.png"), p0, width = 6.5, height = 6.5, dpi = 300, bg = 'white')
+
+# Generate the alphas
+esteem <- data %>%
+  select('posatt_N', 'worth_N', 'welloth_N', 'satself_N') %>%
+  cov() %>%
+  psych::alpha()
+
+derogation <- data %>%
+  select('proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N') %>%
+  cov() %>%
+  psych::alpha()
+
+selfconcept <- data %>%
+  select('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
+         -'proud_N', -'nogood_N', -'wrong_N', -'lifeuse_N') %>%
+  cov() %>%
+  psych::alpha(check.keys = TRUE) # this auto reverse codes the derogation items
+
+wellbeing <- data %>%
+  select('happy_N', 'lifesat_N') %>%
+  cov() %>%
+  psych::alpha()
+
+index <- c('esteem', 'derogation', 'selfconcept', 'wellbeing')
+alphas <- c(esteem$total$raw_alpha, derogation$total$raw_alpha, 
+            selfconcept$total$raw_alpha, wellbeing$total$raw_alpha)
+alpha_df <- data.frame(index, alphas)
+alpha_df$alphas <- round(alpha_df$alphas, digits = 2)
+write_xlsx(alpha_df, path = file.path(outDir, "alphas.xlsx"))
+
+remove(cor_matrix, esteem, derogation, selfconcept, wellbeing)
+
+scoring_key = list(
+  esteem      = c('posatt_N', 'worth_N', 'welloth_N', 'satself_N'),
+  derogation  = c('proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N'),
+  selfconcept = c('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
+                  '-proud_N', '-nogood_N', '-wrong_N', '-lifeuse_N'))
+
+scales <- as_tibble(psych::scoreFast(
+  keys   = scoring_key, 
+  items  = data,
+  totals = FALSE)) # average scores
+
+data$esteem      <- scales$`esteem-A`
+data$derogation  <- scales$`derogation-A`
+data$selfconcept <- scales$`selfconcept-A`
+
+data <- data %>%
+# Standardize new variables
+mutate(across(
+  .cols = c('esteem', 'derogation', 'selfconcept'), 
+  .fns = scale,
+  .names = "{.col}_std")) %>%
+  # Back to numeric variable
+  mutate(across(c('esteem_std', 'derogation_std', 
+                  'selfconcept_std'), as.numeric)) %>%
+  # Round to 2 decimal places
+  mutate(across(c('esteem_std', 'derogation_std', 
+                  'selfconcept_std'), round, 2))
 
 # Create survey data -----------------------------------------------------------
 mtf_svy <- data %>%

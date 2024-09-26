@@ -176,12 +176,16 @@ avg_mh <- mtf_svy_l %>%
          vals_low = round(vals_low, digits = 2), 
          vals_upp = round(vals_upp, digits = 2)) %>%
   mutate(index = fct_case_when(
-    attribute == "happy"    | attribute == "lifesat"                                                   ~ "Well-being",
-    attribute == "posatt"   | attribute == "worth"  | attribute == "welloth"  | attribute == "satself" ~ "Self-esteem",
-    attribute == "proud"    | attribute == "nogood" | attribute == "wrong"    | attribute == "lifeuse" ~ "Self-derogation",
-    attribute == "meaning"  | attribute == "enjoy"  | attribute == "hopeless" | attribute == "alive"   ~ "Depression",
-    attribute == "anxiety"                                                                             ~ "Anxiety",
-    TRUE                                                                                               ~  NA_character_)) 
+    attribute == "happy"                                                        ~ "Happiness",
+    attribute == "lifesat"                                                      ~ "Life satisfaction",
+    attribute == "posatt"   | attribute == "worth"  | attribute == "welloth"  | 
+      attribute == "satself"                                                    ~ "Self-esteem",
+    attribute == "proud"    | attribute == "nogood" | attribute == "wrong"    | 
+      attribute == "lifeuse"                                                    ~ "Self-derogation",
+    attribute == "meaning"  | attribute == "enjoy"  | attribute == "hopeless" | 
+      attribute == "alive"                                                      ~ "Depression",
+    attribute == "anxiety"                                                      ~ "Anxiety",
+    TRUE                                                                        ~  NA_character_)) 
 
 p3 <- avg_mh %>%  
   filter(index != "Anxiety" & index != "Depression") %>%
@@ -248,21 +252,13 @@ index_names <- c(
   `Well-being`      = "Happiness",
   `Self-concept`    = "Self-concept")
 
-df_scale_avg$index <- factor(df_scale_avg$index, 
-                             levels=c('Well-being', 
-                                      'Self-concept',
-                                      'Self-esteem',
-                                      'Self-derogation',
-                                      'Anxiety', 
-                                      'Depression'))
-
 p4 <- df_scale_avg %>%  
-  filter((attribute == "AVERAGE" | attribute == "happy") & index != "Self-concept") %>%
+  filter((attribute == "AVERAGE" | attribute == "happy" | attribute == "lifesat") & index != "Self-concept") %>%
   filter(vals != 0.00 & vals_low != 0.00 & vals_upp != 0.00) %>%
   ggplot(aes(x = year, y = vals, color = index, ymin = vals_low, ymax = vals_upp)) +
   #  geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
   geom_line(linewidth = 1, na.rm=TRUE) +
-  facet_grid(. ~ index, labeller = as_labeller(index_names)) +
+  facet_grid(. ~ index) +
   theme(legend.position = "none",
         panel.grid.minor = element_blank()) +
   labs( x        = " ", 
@@ -274,28 +270,28 @@ p4 <- df_scale_avg %>%
 p4 
 
 ggsave(file.path(here(outDir, figDir),"scale_averages.png"), p4, 
-       width = 6.5, height = 8.5, dpi = 300, bg = 'white')
+       width = 8.5, height = 6.5, dpi = 300, bg = 'white')
 
 
 p5 <- df_scale_avg %>%  
-  filter(attribute == "happy" | index == "Self-concept") %>%
+  filter(attribute == "happy" | attribute == "lifesat" | index == "Self-concept") %>%
   filter(vals != 0.00 & vals_low != 0.00 & vals_upp != 0.00) %>%
   ggplot(aes(x = year, y = vals, color = index, ymin = vals_low, ymax = vals_upp)) +
   #  geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
   geom_line(linewidth = 1, na.rm=TRUE) +
-  facet_grid(. ~ index, labeller = as_labeller(index_names)) +
+  facet_grid(. ~ index) +
   theme(legend.position = "none",
         panel.grid.minor = element_blank()) +
   labs( x        = " ", 
         y        = " ", 
-        title    = "Trends in happiness & self-concept (esteem + derogation)",
+        title    = "Trends in happiness, life satisfaction, & self-concept (esteem + derogation)",
         subtitle = " ",
         caption  = "Monitoring the Future 12th Grade Surveys (1976-2022)")
 
 p5 
 
 ggsave(file.path(here(outDir, figDir),"scale_averages2.png"), p5, 
-       width = 6.5, height = 8.5, dpi = 300, bg = 'white')
+       width = 8.5, height = 6.5, dpi = 300, bg = 'white')
 
 
 ## REGRESSIONS -----------------------------------------------------------------
@@ -303,11 +299,92 @@ ggsave(file.path(here(outDir, figDir),"scale_averages2.png"), p5,
 write.dta(data, file = file.path(outDir, "data.dta"))
 
 data$gdsp   <- relevel(data$gdsp,   ref = "Very good")
+data$gdpa   <- relevel(data$gdpa,   ref = "Very good")
+data$gdwk   <- relevel(data$gdwk,   ref = "Very good")
 
-mod <- glm(selfconcept ~ gdsp + year, data = data, weights=svyweight)
+## Happiness
+mod.ha.sp   <- glm(happy_N_std ~ gdsp * year, data = data, weights=svyweight)
+mod.ha.pa   <- glm(happy_N_std ~ gdpa * year, data = data, weights=svyweight)
+mod.ha.wk   <- glm(happy_N_std ~ gdwk * year, data = data, weights=svyweight)
 
-avg <- avg_predictions(mod, by = c("year", "gdsp"))
+avg.ha.sp   <- avg_predictions(mod.ha.sp, by = c("year", "gdsp"))
+avg.ha.pa   <- avg_predictions(mod.ha.pa, by = c("year", "gdpa"))
+avg.ha.wk   <- avg_predictions(mod.ha.wk, by = c("year", "gdwk"))
 
-# running as linear for now
-summary(glm(happy_N     ~ gdsp + gdpa + gdwk + year, data = data, weights=svyweight)) 
+## Life satisfaction
+mod.ls.sp   <- glm(lifesat_N_std ~ gdsp * year, data = data, weights=svyweight)
+mod.ls.pa   <- glm(lifesat_N_std ~ gdpa * year, data = data, weights=svyweight)
+mod.ls.wk   <- glm(lifesat_N_std ~ gdwk * year, data = data, weights=svyweight)
+
+avg.ls.sp   <- avg_predictions(mod.ls.sp, by = c("year", "gdsp"))
+avg.ls.pa   <- avg_predictions(mod.ls.pa, by = c("year", "gdpa"))
+avg.ls.wk   <- avg_predictions(mod.ls.wk, by = c("year", "gdwk"))
+
+## Self-concept
+mod.sc.sp   <- glm(selfconcept_std ~ gdsp * year, data = data, weights=svyweight)
+mod.sc.pa   <- glm(selfconcept_std ~ gdpa * year, data = data, weights=svyweight)
+mod.sc.wk   <- glm(selfconcept_std ~ gdwk * year, data = data, weights=svyweight)
+
+avg.sc.sp   <- avg_predictions(mod.sc.sp, by = c("year", "gdsp"))
+avg.sc.pa   <- avg_predictions(mod.sc.pa, by = c("year", "gdpa"))
+avg.sc.wk   <- avg_predictions(mod.sc.wk, by = c("year", "gdwk"))
+
+# Matching and identifying columns
+colnames(avg.ha.sp)[colnames(avg.ha.sp)=="gdsp"] <- "good"
+colnames(avg.ha.pa)[colnames(avg.ha.pa)=="gdpa"] <- "good"
+colnames(avg.ha.wk)[colnames(avg.ha.wk)=="gdwk"] <- "good"
+
+colnames(avg.ls.sp)[colnames(avg.ls.sp)=="gdsp"] <- "good"
+colnames(avg.ls.pa)[colnames(avg.ls.pa)=="gdpa"] <- "good"
+colnames(avg.ls.wk)[colnames(avg.ls.wk)=="gdwk"] <- "good"
+
+colnames(avg.sc.sp)[colnames(avg.sc.sp)=="gdsp"] <- "good"
+colnames(avg.sc.pa)[colnames(avg.sc.pa)=="gdpa"] <- "good"
+colnames(avg.sc.wk)[colnames(avg.sc.wk)=="gdwk"] <- "good"
+
+avg.ha.sp$cat     <- "Spouse" 
+avg.ha.pa$cat     <- "Parent" 
+avg.ha.wk$cat     <- "Worker" 
+avg.ls.sp$cat     <- "Spouse" 
+avg.ls.pa$cat     <- "Parent" 
+avg.ls.wk$cat     <- "Worker" 
+avg.sc.sp$cat     <- "Spouse" 
+avg.sc.pa$cat     <- "Parent" 
+avg.sc.wk$cat     <- "Worker" 
+
+avg.ha.sp$index   <- "Happiness" 
+avg.ha.pa$index   <- "Happiness" 
+avg.ha.wk$index   <- "Happiness" 
+avg.ls.sp$index   <- "Life satisfaction" 
+avg.ls.pa$index   <- "Life satisfaction" 
+avg.ls.wk$index   <- "Life satisfaction" 
+avg.sc.sp$index   <- "Self-concept" 
+avg.sc.pa$index   <- "Self-concept" 
+avg.sc.wk$index   <- "Self-concept" 
+
+avg_all <- rbind(avg.ha.sp, avg.ha.pa, avg.ha.wk, 
+                 avg.ls.sp, avg.ls.pa, avg.ls.wk,
+                 avg.sc.sp, avg.sc.pa, avg.sc.wk)
+
+avg_all$good <- factor(avg_all$good, 
+                       levels=c('Very good', 'Good', 'Fairly good', 
+                                'Not so good', 'Poor'))
+
+p6 <- avg_all %>%
+  ggplot(aes(x = year, y = estimate, color = cat, ymin = conf.low, ymax = conf.high)) +
+  geom_line(linewidth = 1, na.rm=TRUE) +
+  facet_grid(good ~ index) +
+  theme(panel.grid.minor = element_blank()) +
+  ylim(-1.5, 0.5) +
+  labs( x        = " ", 
+        y        = " ", 
+        title    = "Trends in happiness, life satisfaction, & self-concept",
+        subtitle = "by expected work-family roles",
+        caption  = "Monitoring the Future 12th Grade Surveys (1984-2022)")
+
+p6
+
+ggsave(file.path(here(outDir, figDir),"predicted trends.png"), p6, 
+       width = 8.5, height = 6.5, dpi = 300, bg = 'white')
+
 

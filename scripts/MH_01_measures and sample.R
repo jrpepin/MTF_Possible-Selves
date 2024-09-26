@@ -490,6 +490,10 @@ mutate(across(
   mutate(across(c('esteem_std', 'derogation_std', 
                   'selfconcept_std'), round, 2))
 
+# Sort data by year
+data <- data %>% 
+  arrange(year)
+
 # Create survey data -----------------------------------------------------------
 mtf_svy <- data %>%
   # weight data

@@ -96,7 +96,8 @@ df_prop <- rbind(prop_sp, prop_pa, prop_wk)
 ## Figures
 
 p1 <- df_avg %>%
-  ggplot(aes(x = year, y = vals, color = cat, ymin = vals_low, ymax = vals_upp)) +
+  ggplot(aes(x = year, y = vals, color = cat, 
+             ymin = vals_low, ymax = vals_upp)) +
   geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
   geom_line(linewidth = 1) +
   theme_minimal() +
@@ -111,11 +112,13 @@ p1 <- df_avg %>%
 
 p1 
 
-ggsave(file.path(here(outDir, figDir),"averages.png"), p1, width = 6.5, height = 8.5, dpi = 300, bg = 'white')
+ggsave(file.path(here(outDir, figDir),"averages.png"), p1, 
+       width = 6.5, height = 8.5, dpi = 300, bg = 'white')
 
 
 p2 <- df_prop %>%
-  ggplot(aes(y = decade, x = vals, fill = cat, ymin = vals_low, ymax = vals_upp)) +
+  ggplot(aes(y = decade, x = vals, fill = cat, 
+             ymin = vals_low, ymax = vals_upp)) +
   geom_col(position = position_dodge()) +
   facet_grid(vars(good), vars(fct_rev(cat))) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
@@ -131,7 +134,8 @@ p2 <- df_prop %>%
         caption  = "Monitoring the Future 12th Grade Surveys (1976-2022)") 
 p2
 
-ggsave(file.path(here(outDir, figDir),"proportions.png"), p2, width = 6.5, height = 8.5, dpi = 300, bg = 'white')
+ggsave(file.path(here(outDir, figDir),"proportions.png"), p2, 
+       width = 6.5, height = 8.5, dpi = 300, bg = 'white')
 
 
 ## MH Descriptives -------------------------------------------------------------
@@ -195,7 +199,8 @@ p3 <- avg_mh %>%
 
 p3
 
-ggsave(file.path(here(outDir, figDir),"MH-trends.png"), p3, width = 8.5, height = 6.5, dpi = 300, bg = 'white')
+ggsave(file.path(here(outDir, figDir),"MH-trends.png"), p3, 
+       width = 8.5, height = 6.5, dpi = 300, bg = 'white')
 
 ## Combined scale trends -------------------------------------------------------
 
@@ -268,7 +273,8 @@ p4 <- df_scale_avg %>%
 
 p4 
 
-ggsave(file.path(here(outDir, figDir),"scale_averages.png"), p4, width = 6.5, height = 8.5, dpi = 300, bg = 'white')
+ggsave(file.path(here(outDir, figDir),"scale_averages.png"), p4, 
+       width = 6.5, height = 8.5, dpi = 300, bg = 'white')
 
 
 p5 <- df_scale_avg %>%  
@@ -288,11 +294,20 @@ p5 <- df_scale_avg %>%
 
 p5 
 
-ggsave(file.path(here(outDir, figDir),"scale_averages2.png"), p5, width = 6.5, height = 8.5, dpi = 300, bg = 'white')
+ggsave(file.path(here(outDir, figDir),"scale_averages2.png"), p5, 
+       width = 6.5, height = 8.5, dpi = 300, bg = 'white')
 
 
 ## REGRESSIONS -----------------------------------------------------------------
 
-summary(glm(selfconcept ~ gdsp + gdpa + gdwk + year, data = data, weights=svyweight))
-summary(glm(happy_N     ~ gdsp + gdpa + gdwk + year, data = data, weights=svyweight)) # running as linear for now
+write.dta(data, file = file.path(outDir, "data.dta"))
+
+data$gdsp   <- relevel(data$gdsp,   ref = "Very good")
+
+mod <- glm(selfconcept ~ gdsp + year, data = data, weights=svyweight)
+
+avg <- avg_predictions(mod, by = c("year", "gdsp"))
+
+# running as linear for now
+summary(glm(happy_N     ~ gdsp + gdpa + gdwk + year, data = data, weights=svyweight)) 
 

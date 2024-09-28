@@ -16,9 +16,9 @@ gen year_sq = year_c^2 // same as year_c*year_c
 ******** WORKER (gdwk)
 
 ologit   gdwk $CVs                                           [pweight = svyweight], or
-ologit   gdwk $CVs year_c year_sq                            [pweight = svyweight]
-ologit   gdwk $CVs year_c year_sq i.religion i.famstru_d     [pweight = svyweight]
-ologit   gdwk $CVs year_c year_sq i.religion i.famstru_d c.selfconcept  [pweight = svyweight]
+ologit   gdwk $CVs year_c year_sq                            [pweight = svyweight], or
+ologit   gdwk $CVs year_c year_sq i.religion i.famstru_d     [pweight = svyweight], or
+ologit   gdwk $CVs year_c year_sq i.religion i.famstru_d c.selfconcept  [pweight = svyweight], or
 
 	
 ******** SPOUSE (gdsp)

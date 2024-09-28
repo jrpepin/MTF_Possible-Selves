@@ -23,6 +23,7 @@ pacman::p_load(
   srvyr,           # create weighted survey data
   sjPlot,          # generate a codebook
   MESS,            # round percentages
+  MASS,            # ologits
   marginaleffects, # average marginal effects
   ggeffects,       # predicted probabilities
   effects,         # required for ggeffects
@@ -58,6 +59,7 @@ conflict_prefer("count",     "dplyr")
 conflict_prefer("rename",    "dplyr")
 conflict_prefer("arrange",   "dplyr")
 conflict_prefer("desc",      "dplyr")
+conflict_prefer("select",    "gtsummary")
 
 ################################################################################
 # Functions

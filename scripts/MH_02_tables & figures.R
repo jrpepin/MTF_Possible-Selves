@@ -5,26 +5,47 @@
 #-------------------------------------------------------------------------------
 
 # Create table 01 --------------------------------------------------------------
-tabA <- mtf_svy %>%
-  select(c(gdsp, gdpa, gdwk, sex, race, momed)) %>%
+tab1 <- mtf_svy %>%
+  gtsummary::select(c(gdwk, gdsp, gdpa,  
+                      #decade,
+                      sex, race, momed, region,
+                      religion, famstru.d, 
+                      selfconcept)) %>%
   tbl_svysummary(
-    label = list(gdsp     ~ "Good as a spouse",
-                 gdpa     ~ "Good as a parent",
-                 gdwk     ~ "Good as a worker",
-                 sex      ~ "Gender",
-                 race     ~ "Race",
-                 momed    ~ "Mothers' education"))  %>%
+#    by = decade,
+#    type = list(c(happy_N_std, lifesat_N_std) ~ "continuous2"),
+    type  = list(
+      c(sex, race, momed) ~ "dichotomous"),
+    value = list(
+      sex = "Women", 
+      race = "Black", 
+      momed = "Completed college"),
+    label = list(
+      gdwk            ~ "Expectations as worker",
+      gdsp            ~ "Expectations as spouse",
+      gdpa            ~ "Expectations as parent",
+      sex             ~ "Women",
+      race            ~ "Black",
+      momed           ~ "Mom completed college",
+      religion        ~ "Religiosity",
+      famstru.d       ~ "Both parents",
+      region          ~ "Region",
+      #     happy_N_std    ~ "Happiness",
+      #     lifesat_N_std  ~ "Life satisfaction",
+      selfconcept     ~ "Self-concept"),
+    statistic = list(
+      all_continuous()  ~ "{median} ({p25}, {p75})",
+      all_categorical() ~ "{p}%"))  %>%
   modify_header(
-    label = '**Variable**',
-    stat_0 = '**N (unweighted) = 102212**') %>%
-  modify_caption("Weighted statistics of the pooled analytic sample") %>%
+    label  = '**Variable**',
+    stat_0 = '**N (unweighted) = 50200**') %>%
+  modify_caption("Table 01. Weighted statistics of the pooled analytic sample") %>%
   as_flex_table() 
 #  add_footer_lines("notes")
 
-tabA # show table
+tab1 # show table
 
-save_as_docx(tabA, path = file.path(outDir, "tabA.docx"))
-
+save_as_docx(tab1, path = file.path(outDir, "MH_table01.docx"))
 
 ## WFE Trends ------------------------------------------------------------------
 # Averages
@@ -59,83 +80,33 @@ avg_wk$cat    <- "Worker"
 
 df_avg <- rbind(avg_sp, avg_pa, avg_wk)
 
-# Proportions per level
-prop_sp <- mtf_svy %>%
-  group_by(decade, gdsp) %>%
-  summarize(vals  = survey_mean(na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round_percent(vals)/100, # round with preserving to 100%
-         vals_low = round_percent(vals_low)/100, 
-         vals_upp = round_percent(vals_upp)/100)
-
-prop_pa <- mtf_svy %>%
-  group_by(decade, gdpa) %>%
-  summarize(vals  = survey_mean(na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round_percent(vals)/100, # round with preserving to 100%
-         vals_low = round_percent(vals_low)/100, 
-         vals_upp = round_percent(vals_upp)/100)
-
-prop_wk <- mtf_svy %>%
-  group_by(decade, gdwk) %>%
-  summarize(vals  = survey_mean(na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round_percent(vals)/100, # round with preserving to 100%
-         vals_low = round_percent(vals_low)/100, 
-         vals_upp = round_percent(vals_upp)/100)
-
-#### Combine dfs
-prop_sp$cat    <- "Spouse" 
-prop_pa$cat    <- "Parent" 
-prop_wk$cat    <- "Worker" 
-
-colnames(prop_sp)[colnames(prop_sp)=="gdsp"] <- "good"
-colnames(prop_pa)[colnames(prop_pa)=="gdpa"] <- "good"
-colnames(prop_wk)[colnames(prop_wk)=="gdwk"] <- "good"
-
-df_prop <- rbind(prop_sp, prop_pa, prop_wk)
-
-
-## Figures
-
 p1 <- df_avg %>%
   ggplot(aes(x = year, y = vals, color = cat, 
              ymin = vals_low, ymax = vals_upp)) +
-  geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
-  geom_line(linewidth = 1) +
+#  geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
+#  geom_line(linewidth = 1) +
+  geom_smooth(alpha = .2, method="loess", se=TRUE, fullrange=FALSE, level=0.95) +
+  geom_point(alpha = .5) +
   theme_minimal() +
+  theme(
+    plot.title.position = "plot",
+    panel.grid.minor = element_blank()) +
   guides(color = guide_legend(reverse=TRUE)) +
-  ylim(3, 5) +
+  ylim(3.5, 5) +
   labs( x        = " ", 
         y        = " ", 
         color    = " ",
         title    = "How good do you think you would be as a _________",
-        subtitle = "annual averages (1 = Poor 5 = Very Good)",
-        caption  = "Monitoring the Future 12th Grade Surveys (1976-2022)")
+        subtitle = "Scale: (1) Poor - (5) Very good",
+        caption  = "Monitoring the Future 12th Grade Surveys (1976-2022)
+        Note: Survey years 2020, 2021, & 2022 were combined due to small sample sizes.")
 
 p1 
 
-ggsave(file.path(here(outDir, figDir),"averages.png"), p1, 
-       width = 6.5, height = 8.5, dpi = 300, bg = 'white')
+ggsave(file.path(here(outDir, figDir),"MH_fig01.png"), p1, 
+       width = 6, height = 5.5, dpi = 300, bg = 'white')
 
 
-p2 <- df_prop %>%
-  ggplot(aes(y = decade, x = vals, fill = cat, 
-             ymin = vals_low, ymax = vals_upp)) +
-  geom_col(position = position_dodge()) +
-  facet_grid(vars(good), vars(fct_rev(cat))) +
-  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
-  # stat_smooth(method = "lm", size = .5, fill = "grey80") +
-  scale_y_discrete(limits = rev) +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs( x        = " ", 
-        y        = " ", 
-        fill     = " ",
-        title    = "How good do you think you would be as a _________",
-        subtitle = "annual proportions",
-        caption  = "Monitoring the Future 12th Grade Surveys (1976-2022)") 
-p2
-
-ggsave(file.path(here(outDir, figDir),"proportions.png"), p2, 
-       width = 6.5, height = 8.5, dpi = 300, bg = 'white')
 
 
 ## MH Descriptives -------------------------------------------------------------

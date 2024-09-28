@@ -74,6 +74,20 @@ data$year[is.na(data$year)]  <- "1978" # 34 people in 1978 have a missing year v
 
 data$year <- as.integer(data$year)
 
+data <- data %>%
+  # combining 2020 samples due to sample size issue
+  mutate(year = case_when(
+    year == 2020 ~ 2022,
+    year == 2021 ~ 2022,
+    TRUE ~ year))
+
+### put data in chronological order, center, & square
+data <- data %>%
+  arrange(year) %>%
+  mutate(
+    year.c  = round(year - mean(year), 5),
+    year.sq = year.c^2, 4)
+
 ## Weights
 colSums(!is.na(data))
 table(data$year, !is.na(data$wt7611)) # 102810
@@ -102,10 +116,10 @@ data <- data %>%
       gdsp == 5 | gdsp == "VRY GOOD" | gdsp == "Very good"  | gdsp == "VRY GOOD:(5)"                           ~ "Very good",
       TRUE                                                                                                     ~  NA_character_),
     # Good spouse dummy
-    gdsp_dum = fct_case_when(
-      gdsp  == "Very good"   |
+    gdsp_v = case_when(
+      gdsp  == "Very good"   ~ 1,
       gdsp  == "Good"        |
-      gdsp  == "Fairly good" ~ 1,
+      gdsp  == "Fairly good" |
       gdsp  == "Not so good" |
       gdsp  == "Poor"        ~ 0),
     # Good spouse numeric
@@ -119,10 +133,10 @@ data <- data %>%
       gdpa == 5 | gdpa == "VRY GOOD" | gdpa == "Very good"  | gdpa == "VRY GOOD:(5)"                           ~ "Very good",
       TRUE                                                                                                     ~  NA_character_),
     # Good parent dummy
-    gdpa_dum = fct_case_when(
-      gdpa  == "Very good"   |
+    gdpa_v = case_when(
+      gdpa  == "Very good"   ~ 1,
       gdpa  == "Good"        |
-      gdpa  == "Fairly good" ~ 1,
+      gdpa  == "Fairly good" |
       gdpa  == "Not so good" |
       gdpa  == "Poor"        ~ 0),
     # Good parent numeric
@@ -136,10 +150,10 @@ data <- data %>%
       gdwk == 5 | gdwk == "VRY GOOD" | gdwk == "Very good"  | gdwk == "VRY GOOD:(5)"                           ~ "Very good",
       TRUE                                                                                                     ~  NA_character_),
     # Good worker dummy
-    gdwk_dum = fct_case_when(
-      gdwk  == "Very good"   |
+    gdwk_v = case_when(
+      gdwk  == "Very good"   ~ 1,
       gdwk  == "Good"        |
-      gdwk  == "Fairly good" ~ 1,
+      gdwk  == "Fairly good" |
       gdwk  == "Not so good" |
       gdwk  == "Poor"        ~ 0),
     # Good worker numeric
@@ -331,6 +345,13 @@ data <- data %>%
       mother == "NO"  & father == "YES" ~ "Father Only",
       mother == "NO"  & father == "NO"  ~ "Neither Mother/Father",
       TRUE                              ~  NA_character_),
+    # Family Structure Dummy
+    famstru.d = case_when(
+      famstru == "Both Mother & Father"    ~ 1,
+      famstru == "Mother Only"   | 
+        famstru == "Father Only" | 
+        famstru == "Neither Mother/Father" ~ 0,
+      TRUE                                ~ NA_integer_),
     # Region
     region = fct_case_when(
       region == 1 | region == "NE" | region == "NE:(1)"   | region == "NORTHEAST"     | region == "NORTHEAST:(1)" ~ "Northeast",
@@ -338,15 +359,15 @@ data <- data %>%
       region == "NORTH CENTRL:(2)" | region == "NORTH CENTRAL:(2)"                                                ~ "Midwest",
       region == 3 | region == "S"  | region == "S:(3)"    | region == "SOUTH"         | region == "SOUTH:(3)"     ~ "South",
       region == 4 | region == "W"  | region == "W:(4)"    | region == "WEST"          | region == "WEST:(4)"      ~ "West")) %>%
-  select(ID, svyweight, year, decade, 
-         gdsp, gdsp_dum, gdsp_num,
-         gdpa, gdpa_dum, gdpa_num,
-         gdwk, gdwk_dum, gdwk_num,
+  select(ID, svyweight, year, year.c, year.sq, decade, 
+         gdsp, gdsp_v, gdsp_num,
+         gdpa, gdpa_v, gdpa_num,
+         gdwk, gdwk_v, gdwk_num,
          happy, lifesat, # Positive Affect (1976+)
          posatt, worth, welloth, satself, # Self-esteem (1984+)
          proud, nogood, wrong, lifeuse, # Self-derogation (1984+)
          meaning, enjoy, hopeless, alive, anxiety, # Depression & Anxiety (2022+)
-         sex, race, racesex, momed, famstru, religion, region, tablet) 
+         sex, race, racesex, momed, famstru, famstru.d, religion, region, tablet) 
 
 ### Add formatted level labels for plotting 
 data <- data %>%
@@ -408,10 +429,13 @@ data <- data %>%
   # exclude cases missing on DVs
   drop_na(c(gdwk, gdsp, gdpa)) %>%
   # exclude cases missing on key IV
-  drop_na(c(sex)) %>%
+  drop_na(c(sex, race, momed, religion, famstru, region)) %>%
   drop_na(c(happy, lifesat, 
             posatt, worth, welloth, satself, 
-            proud, nogood, wrong, lifeuse))
+            proud, nogood, wrong, lifeuse)) %>%
+  filter(decade != "1970s")
+
+data$decade <- droplevels(data$decade)
 
 # Analytic sample size
 count(data)
@@ -490,14 +514,11 @@ mutate(across(
   mutate(across(c('esteem_std', 'derogation_std', 
                   'selfconcept_std'), round, 2))
 
-# Sort data by year
-data <- data %>% 
-  arrange(year)
-
 # Create survey data -----------------------------------------------------------
 mtf_svy <- data %>%
   # weight data
   as_survey_design(id = 1,
                    weights = svyweight)
 
+message("End of MH_01_measures and sample") # Marks end of R Script
 

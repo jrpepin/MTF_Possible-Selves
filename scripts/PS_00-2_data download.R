@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# MTF MENTAL HEALTH PROJECT
+# MTF POSSIBLE SELVES PROJECT
 # MH_00-2_data download.R
 # Joanna R. Pepin & Melissa Milkie
 #-------------------------------------------------------------------------------

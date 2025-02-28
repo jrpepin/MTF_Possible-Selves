@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# MTF MENTAL HEALTH PROJECT
+# MTF POSSIBLE SELVES PROJECT
 # MH_01_measures and sample.R
 # Joanna R. Pepin & Melissa Milkie
 #-------------------------------------------------------------------------------

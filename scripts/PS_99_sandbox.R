@@ -56,8 +56,6 @@ ggsave(file.path(here(outDir, figDir),"proportions.png"), p00,
 
 
 
-
-
 ## Spouse
 mod.sp      <- polr(gdsp ~ year + sex + race + momed + religion + famstru + region, 
                     data = data, weights = svyweight, Hess = T)

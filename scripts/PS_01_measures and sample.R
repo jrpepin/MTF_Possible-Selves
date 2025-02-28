@@ -1,13 +1,13 @@
 #-------------------------------------------------------------------------------
 # MTF POSSIBLE SELVES PROJECT
-# MH_01_measures and sample.R
+# PS_01_measures and sample.R
 # Joanna R. Pepin & Melissa Milkie
 #-------------------------------------------------------------------------------
 
 # Project Environment ----------------------------------------------------------
-## The MH_00-1_setup and packages.R script should be run before this script
+## The PS_00-1_setup and packages.R script should be run before this script
 
-# source(MH_00-1_setup and packages.R)
+# source(PS_00-1_setup and packages.R)
 
 # DATA -------------------------------------------------------------------------
 load(paste0(dataDir, "/mtf_form2.Rda"))
@@ -520,5 +520,5 @@ mtf_svy <- data %>%
   as_survey_design(id = 1,
                    weights = svyweight)
 
-message("End of MH_01_measures and sample") # Marks end of R Script
+message("End of PS_01_measures and sample") # Marks end of R Script
 

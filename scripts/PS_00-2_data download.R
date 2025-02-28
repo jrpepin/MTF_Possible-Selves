@@ -1,10 +1,10 @@
 #-------------------------------------------------------------------------------
 # MTF POSSIBLE SELVES PROJECT
-# MH_00-2_data download.R
+# PS_00-2_data download.R
 # Joanna R. Pepin & Melissa Milkie
 #-------------------------------------------------------------------------------
 ## This script only needs to be run the first time to download the data.
-## Users should run MH_00-1_setup and packages.R before running this script.
+## Users should run PS_00-1_setup and packages.R before running this script.
 
 # if (!require(remotes)) install.packages("remotes")   # used to download the icpsrdata package
 # remotes::install_github("fsolt/icpsrdata")           # download ICPSR data

@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 # MTF POSSIBLE SELVES PROJECT
-# MH_00-1_setup and packages.R
+# PS_00-1_setup and packages.R
 # Joanna R. Pepin & Melissa Milkie
 #-------------------------------------------------------------------------------
 
@@ -116,6 +116,6 @@ if (!dir.exists(here::here(outDir, figDir))){
 ## Users should remove the # before the source() line to run the data download.
 ## This script only needs to be run the first time or if there is a new wave of data.
 
-# source(MH_00-2_data download.R)
+# source(PS_00-2_data download.R)
 
-message("End of MH_00-1_setup and packages") # Marks end of R Script
+message("End of PS_00-1_setup and packages") # Marks end of R Script

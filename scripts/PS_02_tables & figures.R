@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 # MTF POSSIBLE SELVES PROJECT
-# MH_02_tables & figures.R
+# PS_02_tables & figures.R
 # Joanna R. Pepin & Melissa Milkie
 #-------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ tab1 <- mtf_svy %>%
 
 tab1 # show table
 
-save_as_docx(tab1, path = file.path(outDir, "MH_table01.docx"))
+save_as_docx(tab1, path = file.path(outDir, "PS_table01.docx"))
 
 ## WFE Trends ------------------------------------------------------------------
 # Averages
@@ -103,13 +103,13 @@ p1 <- df_avg %>%
 
 p1 
 
-ggsave(file.path(here(outDir, figDir),"MH_fig01.png"), p1, 
+ggsave(file.path(here(outDir, figDir),"PS_fig01.png"), p1, 
        width = 6, height = 5.5, dpi = 300, bg = 'white')
 
 
 
 
-## MH Descriptives -------------------------------------------------------------
+## PS Descriptives -------------------------------------------------------------
 
 data_long <- data %>%
   pivot_longer(
@@ -174,7 +174,7 @@ p3 <- avg_mh %>%
 
 p3
 
-ggsave(file.path(here(outDir, figDir),"MH-trends.png"), p3, 
+ggsave(file.path(here(outDir, figDir),"PS-trends.png"), p3, 
        width = 8.5, height = 6.5, dpi = 300, bg = 'white')
 
 ## Combined scale trends -------------------------------------------------------

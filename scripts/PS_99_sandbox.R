@@ -226,7 +226,7 @@ tab2
 read_docx() %>% 
   body_add_par(paste("Table 2. Ordinal logistic regressions", sep="")) %>% 
   body_add_flextable(value = tab2)                                     %>% 
-  print(target = file.path(outDir, "MH_table02.docx"))                 
+  print(target = file.path(outDir, "PS_table02.docx"))                 
 
 avg.sp      <- avg_predictions(mod.sp, variables =  c("year"))
 avg.pa      <- avg_predictions(mod.pa, variables =  c("year"))

@@ -50,7 +50,7 @@ studyid    <- c( 7927,  7928,  7929,  7930,
                  4536, 20022, 22480, 25382, 28401,
                  30985, 34409, 34861, 35218, 36263,
                  36408, 36798, 37182, 37416, 37841,
-                 38156, 38503, 38882)
+                 38156, 38503, 38882, 39172)
 
 surveyyear <- c(1976, 1977, 1978, 1979,
                 1980, 1981, 1982, 1983, 1984,
@@ -61,7 +61,7 @@ surveyyear <- c(1976, 1977, 1978, 1979,
                 2005, 2006, 2007, 2008, 2009,
                 2010, 2011, 2012, 2013, 2014,
                 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022)
+                2020, 2021, 2022, 2023)
 
 Xwalk <- data.frame(surveyyear, studyid)
 
@@ -74,12 +74,12 @@ data$year[is.na(data$year)]  <- "1978" # 34 people in 1978 have a missing year v
 
 data$year <- as.integer(data$year)
 
-data <- data %>%
-  # combining 2020 samples due to sample size issue
-  mutate(year = case_when(
-    year == 2020 ~ 2022,
-    year == 2021 ~ 2022,
-    TRUE ~ year))
+# data <- data %>%
+#  # combining 2020 samples due to sample size issue
+#  mutate(year = case_when(
+#    year == 2020 ~ 2022,
+#    year == 2021 ~ 2022,
+#    TRUE ~ year))
 
 ### put data in chronological order, center, & square
 data <- data %>%

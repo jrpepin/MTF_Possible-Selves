@@ -47,7 +47,7 @@ tab1 # show table
 
 save_as_docx(tab1, path = file.path(outDir, "PS_table01.docx"))
 
-## WFE Trends ------------------------------------------------------------------
+## PS Trends -------------------------------------------------------------------
 # Averages
 avg_sp <- mtf_svy %>%
   select(year, gdsp_num) %>%
@@ -98,7 +98,7 @@ p1 <- df_avg %>%
         color    = " ",
         title    = "How good do you think you would be as a _________",
         subtitle = "Scale: (1) Poor - (5) Very good",
-        caption  = "Monitoring the Future 12th Grade Surveys (1976-2022)
+        caption  = "Monitoring the Future 12th Grade Surveys (1976-2023)
         Note: Survey years 2020, 2021, & 2022 were combined due to small sample sizes.")
 
 p1 
@@ -109,7 +109,7 @@ ggsave(file.path(here(outDir, figDir),"PS_fig01.png"), p1,
 
 
 
-## PS Descriptives -------------------------------------------------------------
+## MH Descriptives -------------------------------------------------------------
 
 data_long <- data %>%
   pivot_longer(
@@ -249,16 +249,18 @@ p5 <- df_scale_avg %>%
   filter(vals != 0.00 & vals_low != 0.00 & vals_upp != 0.00) %>%
   ggplot(aes(x = year, y = vals, color = index, ymin = vals_low, ymax = vals_upp)) +
   #  geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
+  #  geom_smooth(alpha = .1, method="loess", se=TRUE, fullrange=FALSE, level=0.95) +
   geom_line(linewidth = 1, na.rm=TRUE) +
   facet_grid(. ~ index) +
+  theme_minimal() +
   theme(legend.position = "none",
         panel.grid.minor = element_blank()) +
+  scale_x_continuous(limits = c(1984, 2025), breaks = c(1985, 1995, 2005, 2015, 2025)) +
   labs( x        = " ", 
         y        = " ", 
         title    = "Trends in happiness, life satisfaction, & self-concept (esteem + derogation)",
         subtitle = " ",
-        caption  = "Monitoring the Future 12th Grade Surveys (1976-2022)")
-
+        caption  = "Monitoring the Future 12th Grade Surveys (1976-2023)")
 p5 
 
 ggsave(file.path(here(outDir, figDir),"scale_averages2.png"), p5, 

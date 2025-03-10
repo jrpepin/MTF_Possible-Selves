@@ -104,7 +104,7 @@ mod.wk.all  <- polr(gdwk ~ happy_N_std + lifesat_N_std +  selfconcept_std +
                       year + sex + race + momed + religion + famstru + region, 
                     data = data, weights = svyweight, Hess = T)
 
-broom::tidy(mod.sp)
+broom::tidy(mod.sp.all)
 m1 <- broom::tidy(mod.wk.all)
 m2 <- broom::tidy(mod.sp.all)
 m3 <- broom::tidy(mod.pa.all)

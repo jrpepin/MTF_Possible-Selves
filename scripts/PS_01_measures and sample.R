@@ -85,8 +85,9 @@ data$year <- as.integer(data$year)
 data <- data %>%
   arrange(year) %>%
   mutate(
-    year.c  = round(year - mean(year), 5),
-    year.sq = year.c^2, 4)
+    year2    = year^2,
+    year.c     = round(year - mean(year), 5),
+    year2.c  = year.c^2)
 
 ## Weights
 colSums(!is.na(data))
@@ -359,7 +360,7 @@ data <- data %>%
       region == "NORTH CENTRL:(2)" | region == "NORTH CENTRAL:(2)"                                                ~ "Midwest",
       region == 3 | region == "S"  | region == "S:(3)"    | region == "SOUTH"         | region == "SOUTH:(3)"     ~ "South",
       region == 4 | region == "W"  | region == "W:(4)"    | region == "WEST"          | region == "WEST:(4)"      ~ "West")) %>%
-  select(ID, svyweight, year, year.c, year.sq, decade, 
+  select(ID, svyweight, year, year.c, year2, year2.c, decade, 
          gdsp, gdsp_v, gdsp_num,
          gdpa, gdpa_v, gdpa_num,
          gdwk, gdwk_v, gdwk_num,
@@ -413,7 +414,7 @@ new_col_order <- sort(names(data))
 
 data %>% 
   relocate(
-    ID, svyweight, year, decade, starts_with("gd"), all_of(new_col_order)) %>%
+    ID, svyweight, starts_with("year"), decade, starts_with("gd"), all_of(new_col_order)) %>%
   head()
 
 # Sample -----------------------------------------------------------------------

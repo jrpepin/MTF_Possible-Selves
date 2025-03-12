@@ -47,317 +47,345 @@ tab1 # show table
 
 save_as_docx(tab1, path = file.path(outDir, "PS_table01.docx"))
 
-## PS Trends -------------------------------------------------------------------
-# Averages
-avg_sp <- mtf_svy %>%
-  select(year, gdsp_num) %>%
-  group_by(year) %>%
-  summarize(vals  = survey_mean(gdsp_num, na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round(vals, digits = 2), 
-         vals_low = round(vals_low, digits = 2), 
-         vals_upp = round(vals_upp, digits = 2))
+# Create 3 tables to make by hand Table 2 (for now) ----------------------------
 
-avg_pa <- mtf_svy %>%
-  select(year, gdpa_num) %>%
-  group_by(year) %>%
-  summarize(vals  = survey_mean(gdpa_num, na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round(vals, digits = 2), 
-         vals_low = round(vals_low, digits = 2), 
-         vals_upp = round(vals_upp, digits = 2))
+## Spouse ----------------------------------------------------------------------
+polr1.sp  <- polr(gdsp ~ year.c + I(year.c^2),
+                  data = data, weights = svyweight, Hess = T)
 
-avg_wk <- mtf_svy %>%
-  select(year, gdwk_num) %>%
-  group_by(year) %>%
-  summarize(vals  = survey_mean(gdwk_num, na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round(vals, digits = 2), 
-         vals_low = round(vals_low, digits = 2), 
-         vals_upp = round(vals_upp, digits = 2))
+polr2.sp  <- polr(gdsp ~ year.c + I(year.c^2) + 
+                    sex + race + momed + region + religion + famstru.d,
+                  data = data, weights = svyweight, Hess = T)
 
-#### Combine dfs
-avg_sp$cat    <- "Spouse" 
-avg_pa$cat    <- "Parent" 
-avg_wk$cat    <- "Worker" 
+polr3.sp  <- polr(gdsp ~ year.c + I(year.c^2) +  
+                    selfconcept +
+                    sex + race + momed + region + religion + famstru.d,
+                  data = data, weights = svyweight, Hess = T)
 
-df_avg <- rbind(avg_sp, avg_pa, avg_wk)
+## Turn into tidy dataframes
+tidy1.sp <- broom::tidy(polr1.sp)
+tidy2.sp <- broom::tidy(polr2.sp)
+tidy3.sp <- broom::tidy(polr3.sp)
 
-p1 <- df_avg %>%
-  ggplot(aes(x = year, y = vals, color = cat, 
-             ymin = vals_low, ymax = vals_upp)) +
-#  geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
-#  geom_line(linewidth = 1) +
-  geom_smooth(alpha = .2, method="loess", se=TRUE, fullrange=FALSE, level=0.95) +
-  geom_point(alpha = .5) +
-  theme_minimal() +
-  theme(
-    plot.title.position = "plot",
+## Transform output
+tidy1.sp <- tidy1.sp %>%
+  mutate(z_scores = estimate/std.error,
+         p.value  = round(2 * (1 - pnorm(abs(z_scores))), 3),
+         estimate = case_when(
+           coef.type == "coefficient" ~ exp(estimate),
+           coef.type == "scale"       ~ estimate))
+
+tidy2.sp <- tidy2.sp %>%
+  mutate(z_scores = estimate/std.error,
+         p.value  = round(2 * (1 - pnorm(abs(z_scores))), 3),
+         estimate = case_when(
+           coef.type == "coefficient" ~ exp(estimate),
+           coef.type == "scale"       ~ estimate))
+
+tidy3.sp <- tidy3.sp %>%
+  mutate(z_scores = estimate/std.error,
+         p.value  = round(2 * (1 - pnorm(abs(z_scores))), 3),
+         estimate = case_when(
+           coef.type == "coefficient" ~ exp(estimate),
+           coef.type == "scale"       ~ estimate))
+
+## Turn into modelsummary objects
+mod1.sp        <- list(tidy = tidy1.sp)
+class(mod1.sp) <- "modelsummary_list"
+
+mod2.sp        <- list(tidy = tidy2.sp)
+class(mod2.sp) <- "modelsummary_list"
+
+mod3.sp        <- list(tidy = tidy3.sp)
+class(mod3.sp) <- "modelsummary_list"
+
+mods.sp <- list(
+  "Model 1" = mod1.sp,
+  "Model 2" = mod2.sp,
+  "Model 3" = mod3.sp)
+
+cm <- c('year.c'                             = 'Year',
+        'I(year.c^2)'                        = 'Year squared',
+        'sexWomen'                           = 'Women',
+        'raceBlack'                          = 'Black',
+        'momedCompleted college'             = 'Mom BA or more',
+        'selfconcept'                        = 'Self-concept',
+        'Poor|Not so good'                   = 'Poor|Not so good',
+        'Not so good|Fairly good'            = 'Not so good|Fairly good',
+        'Fairly good|Good'                   = 'Fairly good|Good',
+        'Good|Very good'                     = 'Good|Very good')
+
+tab2.sp <- modelsummary(mods.sp,
+                        shape = term ~ model + statistic,
+                        stars = c("*" =.05, "**" = .01, "***" = .001),
+                        coef_map = cm,
+                        fmt = fmt_decimal(digits = 3, pdigits = 3),
+                        output = "huxtable") %>%
+  huxtable::as_flextable()
+
+tab2.sp
+
+read_docx() %>% 
+  body_add_par(paste("Table 2. Spouse", sep="")) %>% 
+  body_add_flextable(value = tab2.sp)          %>% 
+  print(target = file.path(outDir, "MH_table02_sp.docx"))                 
+
+
+## Parent ----------------------------------------------------------------------
+polr1.pa  <- polr(gdpa ~ year.c + I(year.c^2),
+                  data = data, weights = svyweight, Hess = T)
+
+polr2.pa  <- polr(gdpa ~ year.c + I(year.c^2) + 
+                    sex + race + momed + region + religion + famstru.d,
+                  data = data, weights = svyweight, Hess = T)
+
+polr3.pa  <- polr(gdpa ~ year.c + I(year.c^2) +  
+                    selfconcept +
+                    sex + race + momed + region + religion + famstru.d,
+                  data = data, weights = svyweight, Hess = T)
+
+## Turn into tidy dataframes
+tidy1.pa <- broom::tidy(polr1.pa)
+tidy2.pa <- broom::tidy(polr2.pa)
+tidy3.pa <- broom::tidy(polr3.pa)
+
+## Transform output
+tidy1.pa <- tidy1.pa %>%
+  mutate(z_scores = estimate/std.error,
+         p.value  = round(2 * (1 - pnorm(abs(z_scores))), 3),
+         estimate = case_when(
+           coef.type == "coefficient" ~ exp(estimate),
+           coef.type == "scale"       ~ estimate))
+
+tidy2.pa <- tidy2.pa %>%
+  mutate(z_scores = estimate/std.error,
+         p.value  = round(2 * (1 - pnorm(abs(z_scores))), 3),
+         estimate = case_when(
+           coef.type == "coefficient" ~ exp(estimate),
+           coef.type == "scale"       ~ estimate))
+
+tidy3.pa <- tidy3.pa %>%
+  mutate(z_scores = estimate/std.error,
+         p.value  = round(2 * (1 - pnorm(abs(z_scores))), 3),
+         estimate = case_when(
+           coef.type == "coefficient" ~ exp(estimate),
+           coef.type == "scale"       ~ estimate))
+
+## Turn into modelsummary objects
+mod1.pa        <- list(tidy = tidy1.pa)
+class(mod1.pa) <- "modelsummary_list"
+
+mod2.pa        <- list(tidy = tidy2.pa)
+class(mod2.pa) <- "modelsummary_list"
+
+mod3.pa        <- list(tidy = tidy3.pa)
+class(mod3.pa) <- "modelsummary_list"
+
+mods.pa <- list(
+  "Model 1" = mod1.pa,
+  "Model 2" = mod2.pa,
+  "Model 3" = mod3.pa)
+
+cm <- c('year.c'                             = 'Year',
+        'I(year.c^2)'                        = 'Year squared',
+        'sexWomen'                           = 'Women',
+        'raceBlack'                          = 'Black',
+        'momedCompleted college'             = 'Mom BA or more',
+        'selfconcept'                        = 'Self-concept',
+        'Poor|Not so good'                   = 'Poor|Not so good',
+        'Not so good|Fairly good'            = 'Not so good|Fairly good',
+        'Fairly good|Good'                   = 'Fairly good|Good',
+        'Good|Very good'                     = 'Good|Very good')
+
+tab2.pa <- modelsummary(mods.pa,
+                        shape = term ~ model + statistic,
+                        stars = c("*" =.05, "**" = .01, "***" = .001),
+                        coef_map = cm,
+                        fmt = fmt_decimal(digits = 3, pdigits = 3),
+                        output = "huxtable") %>%
+  huxtable::as_flextable()  %>%
+  add_footer_lines("Notes: N=50,200.")
+
+tab2.pa
+
+read_docx() %>% 
+  body_add_par(paste("Table 2. Parent", sep="")) %>% 
+  body_add_flextable(value = tab2.pa)          %>% 
+  print(target = file.path(outDir, "MH_table02_pa.docx"))                 
+
+## Worker ----------------------------------------------------------------------
+
+# polr1.wk  <- polr(gdwk ~ poly(year.c, 2, raw = TRUE), data = data, weights = svyweight, Hess = T) <- same as I(year.c^2)
+
+polr1.wk  <- polr(gdwk ~ year.c + I(year.c^2),
+                  data = data, weights = svyweight, Hess = T)
+
+polr2.wk  <- polr(gdwk ~ year.c + I(year.c^2) + 
+                    sex + race + momed + region + religion + famstru.d,
+                  data = data, weights = svyweight, Hess = T)
+
+polr3.wk  <- polr(gdwk ~ year.c + I(year.c^2) +  
+                    selfconcept +
+                    sex + race + momed + region + religion + famstru.d,
+                  data = data, weights = svyweight, Hess = T)
+
+## Turn into tidy dataframes
+tidy1.wk <- broom::tidy(polr1.wk)
+tidy2.wk <- broom::tidy(polr2.wk)
+tidy3.wk <- broom::tidy(polr3.wk)
+
+## Transform output
+tidy1.wk <- tidy1.wk %>%
+  mutate(z_scores = estimate/std.error,
+         p.value  = round(2 * (1 - pnorm(abs(z_scores))), 3),
+         estimate = case_when(
+           coef.type == "coefficient" ~ exp(estimate),
+           coef.type == "scale"       ~ estimate))
+
+tidy2.wk <- tidy2.wk %>%
+  mutate(z_scores = estimate/std.error,
+         p.value  = round(2 * (1 - pnorm(abs(z_scores))), 3),
+         estimate = case_when(
+           coef.type == "coefficient" ~ exp(estimate),
+           coef.type == "scale"       ~ estimate))
+
+tidy3.wk <- tidy3.wk %>%
+  mutate(z_scores = estimate/std.error,
+         p.value  = round(2 * (1 - pnorm(abs(z_scores))), 3),
+         estimate = case_when(
+           coef.type == "coefficient" ~ exp(estimate),
+           coef.type == "scale"       ~ estimate))
+
+## Turn into modelsummary objects
+mod1.wk        <- list(tidy = tidy1.wk)
+class(mod1.wk) <- "modelsummary_list"
+
+mod2.wk        <- list(tidy = tidy2.wk)
+class(mod2.wk) <- "modelsummary_list"
+
+mod3.wk        <- list(tidy = tidy3.wk)
+class(mod3.wk) <- "modelsummary_list"
+
+mods.wk <- list(
+  "Model 1" = mod1.wk,
+  "Model 2" = mod2.wk,
+  "Model 3" = mod3.wk)
+
+cm <- c('year.c'                             = 'Year',
+        'I(year.c^2)'                        = 'Year squared',
+        'sexWomen'                           = 'Women',
+        'raceBlack'                          = 'Black',
+        'momedCompleted college'             = 'Mom BA or more',
+        'selfconcept'                        = 'Self-concept',
+        'Poor|Not so good'                   = 'Poor|Not so good',
+        'Not so good|Fairly good'            = 'Not so good|Fairly good',
+        'Fairly good|Good'                   = 'Fairly good|Good',
+        'Good|Very good'                     = 'Good|Very good')
+
+tab2.wk <- modelsummary(mods.wk,
+                        shape = term ~ model + statistic,
+                        stars = c("*" =.05, "**" = .01, "***" = .001),
+                        coef_map = cm,
+                        fmt = fmt_decimal(digits = 3, pdigits = 3),
+                        output = "huxtable") %>%
+  huxtable::as_flextable()
+
+tab2.wk
+
+read_docx() %>% 
+  body_add_par(paste("Table 2. Work", sep="")) %>% 
+  body_add_flextable(value = tab2.wk)          %>% 
+  print(target = file.path(outDir, "MH_table02_wk.docx"))                 
+
+
+# Create Figure 1 --------------------------------------------------------------
+
+## Average Predictions 
+pp_sp   <- ggaverage(polr1.sp, terms = c("year.c [all]"))
+pp_pa   <- ggaverage(polr1.pa, terms = c("year.c [all]"))
+pp_wk   <- ggaverage(polr1.wk, terms = c("year.c [all]"))
+
+## Combine dfs
+pp_sp$cat    <- "Spouse" 
+pp_pa$cat    <- "Parent" 
+pp_wk$cat    <- "Worker" 
+
+df_pp <- rbind(pp_wk, pp_sp, pp_pa)
+
+## Tidy variables
+df_pp$response.level <- factor(df_pp$response.level, 
+                               levels=c("Very good", 
+                                        "Good", 
+                                        "Fairly good", 
+                                        "Not so good", 
+                                        "Poor"))
+
+df_pp$cat <- factor(df_pp$cat, 
+                    levels=c("Worker", 
+                             "Spouse", 
+                             "Parent"))
+
+lables_year <- c("1984", "1995", "2005", "2015", "2023")
+
+
+## Plot panels
+
+p1_very <- df_pp %>%
+  filter(response.level == "Very good") %>%
+  ggplot(aes(x = x, y = predicted, color = cat, 
+             ymin = conf.low, ymax = conf.high)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~response.level) +
+  theme_minimal() + 
+  theme(#legend.position = c(1, 0),
+    #legend.justification = c(1, 0),
+    legend.position = "top",
+    legend.title=element_blank(),
+    strip.text.x = element_text(face = "bold"),
     panel.grid.minor = element_blank()) +
-  guides(color = guide_legend(reverse=TRUE)) +
-  ylim(3.5, 5) +
+  scale_y_continuous(breaks = c(0., .25, .5, .75), limits=c(0, .75), labels = scales::percent) +
+  scale_x_continuous(breaks=c(-12.5, -1.54, 8.45, 18.45, 26.45), labels = lables_year) +
   labs( x        = " ", 
-        y        = " ", 
-        color    = " ",
-        title    = "How good do you think you would be as a _________",
-        subtitle = "Scale: (1) Poor - (5) Very good",
-        caption  = "Monitoring the Future 12th Grade Surveys (1976-2023)
-        Note: Survey years 2020, 2021, & 2022 were combined due to small sample sizes.")
+        y        = " ")
 
-p1 
-
-ggsave(file.path(here(outDir, figDir),"PS_fig01.png"), p1, 
-       width = 6, height = 5.5, dpi = 300, bg = 'white')
-
-
-
-
-## MH Descriptives -------------------------------------------------------------
-
-data_long <- data %>%
-  pivot_longer(
-    cols = c(happy, lifesat, 
-             posatt, worth, welloth, satself,
-             proud, nogood, wrong, lifeuse,
-             meaning, enjoy, hopeless, alive, anxiety),
-    names_to = "attribute",
-    values_to = "response") %>%
-  mutate(scale = case_when(
-    response == "Completely dissatisfied"    | response == "Disagree"        | response == "Not too happy"  ~ 1,
-    response == "Quite dissatisfied"         | response == "Mostly disagree" | response == "Pretty happy"   ~ 2,
-    response == "Somewhat dissatisfied"      | response == "Neither"         | response == "Very happy"     ~ 3,
-    response == "Neither, or mixed feelings" | response == "Mostly agree"                                   ~ 4,
-    response == "Somewhat satisfied"         | response == "Agree"                                          ~ 5,
-    response == "Quite satisfied"                                                                           ~ 6,
-    response == "Completely satisfied"                                                                      ~ 7,
-    TRUE                                                                                                    ~ NA_integer_)) %>%
-  group_by(attribute) %>%
-  mutate_at(c('scale'), ~(scale(.) %>% as.vector)) %>%
-  ungroup()
-
-table(data_long$response, data_long$attribute)
-
-mtf_svy_l <- data_long %>%
-  # weight data
-  as_survey_design(id = 1,
-                   weights = svyweight)
-
-avg_mh <- mtf_svy_l %>%
-  select(year, attribute, scale) %>%
-  group_by(year, attribute) %>%
-  summarize(vals  = survey_mean(scale, na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round(vals, digits = 2), 
-         vals_low = round(vals_low, digits = 2), 
-         vals_upp = round(vals_upp, digits = 2)) %>%
-  mutate(index = fct_case_when(
-    attribute == "happy"                                                        ~ "Happiness",
-    attribute == "lifesat"                                                      ~ "Life satisfaction",
-    attribute == "posatt"   | attribute == "worth"  | attribute == "welloth"  | 
-      attribute == "satself"                                                    ~ "Self-esteem",
-    attribute == "proud"    | attribute == "nogood" | attribute == "wrong"    | 
-      attribute == "lifeuse"                                                    ~ "Self-derogation",
-    attribute == "meaning"  | attribute == "enjoy"  | attribute == "hopeless" | 
-      attribute == "alive"                                                      ~ "Depression",
-    attribute == "anxiety"                                                      ~ "Anxiety",
-    TRUE                                                                        ~  NA_character_)) 
-
-p3 <- avg_mh %>%  
-  filter(index != "Anxiety" & index != "Depression") %>%
-  filter(vals != 0.00 & vals_low != 0.00 & vals_upp != 0.00) %>%
-  ggplot(aes(x = year, y = vals, color = attribute, ymin = vals_low, ymax = vals_upp)) +
-#  geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
-  geom_line(linewidth = 1, na.rm=TRUE) +
-  facet_grid(. ~ index) +
-  theme(panel.grid.minor = element_blank()) +
+p1_other <- df_pp %>%
+  filter(response.level != "Very good") %>%
+  ggplot(aes(x = x, y = predicted, color = cat, 
+             ymin = conf.low, ymax = conf.high)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~response.level) +
+  theme_minimal() + 
+  theme(#legend.position = c(1, 0),
+    #legend.justification = c(1, 0),
+    legend.position = "none",
+    legend.title=element_blank(),
+    strip.text.x = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.spacing = unit(1.1, "cm", data = NULL)) +
+  scale_y_continuous(breaks = c(0., .25, .5), limits=c(0, .5), labels = scales::percent) +
+  scale_x_continuous(breaks=c(-12.5, -1.54, 8.45, 18.45, 26.45), labels = lables_year) +
   labs( x        = " ", 
-        y        = " ", 
-        title    = "Trends",
-        subtitle = " ",
-        caption  = "Monitoring the Future 12th Grade Surveys (1976-2022)")
+        y        = " ")
 
-p3
+## Combine plots
+p1 <- (p1_very | p1_other) + plot_layout(widths = c(1, 2)) +
+  plot_annotation('How good do you think you would be as a _________', 
+                  caption = "Monitoring the Future 12th Grade Surveys (1984-2023)")
 
-ggsave(file.path(here(outDir, figDir),"PS-trends.png"), p3, 
-       width = 8.5, height = 6.5, dpi = 300, bg = 'white')
+p1
 
-## Combined scale trends -------------------------------------------------------
+## Save Fig 1
+agg_tiff(filename = file.path(here(outDir, figDir), "fig1.tif"), 
+         width=8, height=6, units="in", res = 800, scaling = 1)
 
-# Averages
-avg_esteem <- mtf_svy_l %>%
-  select(year, esteem_std) %>%
-  group_by(year) %>%
-  summarize(vals  = survey_mean(esteem_std, na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round(vals, digits = 2), 
-         vals_low = round(vals_low, digits = 2), 
-         vals_upp = round(vals_upp, digits = 2))
-
-avg_derogation <- mtf_svy_l %>%
-  select(year, derogation_std) %>%
-  group_by(year) %>%
-  summarize(vals  = survey_mean(derogation_std, na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round(vals, digits = 2), 
-         vals_low = round(vals_low, digits = 2), 
-         vals_upp = round(vals_upp, digits = 2))
-
-avg_selfconcept <- mtf_svy_l %>%
-  select(year, selfconcept_std) %>%
-  group_by(year) %>%
-  summarize(vals  = survey_mean(selfconcept_std, na.rm = TRUE, vartype = "ci")) %>% # create summary proportions
-  mutate(vals     = round(vals, digits = 2), 
-         vals_low = round(vals_low, digits = 2), 
-         vals_upp = round(vals_upp, digits = 2))
-
-#### Combine dfs
-avg_esteem$index          <- "Self-esteem" 
-avg_derogation$index      <- "Self-derogation" 
-avg_selfconcept$index     <- "Self-concept" 
-
-avg_esteem$attribute      <- "AVERAGE"
-avg_derogation$attribute  <- "AVERAGE"
-avg_selfconcept$attribute <- "AVERAGE"
-
-df_scale_avg <- rbind(avg_mh, avg_esteem, avg_derogation, avg_selfconcept)
-
-index_names <- c(
-  `Anxiety`         = "Anxiety",
-  `Depression`      = "Depression",
-  `Self-derogation` = "Self-derogation",
-  `Self-esteem`     = "Self-esteem",
-  `Well-being`      = "Happiness",
-  `Self-concept`    = "Self-concept")
-
-p4 <- df_scale_avg %>%  
-  filter((attribute == "AVERAGE" | attribute == "happy" | attribute == "lifesat") & index != "Self-concept") %>%
-  filter(vals != 0.00 & vals_low != 0.00 & vals_upp != 0.00) %>%
-  ggplot(aes(x = year, y = vals, color = index, ymin = vals_low, ymax = vals_upp)) +
-  #  geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
-  geom_line(linewidth = 1, na.rm=TRUE) +
-  facet_grid(. ~ index) +
-  theme(legend.position = "none",
-        panel.grid.minor = element_blank()) +
-  labs( x        = " ", 
-        y        = " ", 
-        title    = "Trends",
-        subtitle = " ",
-        caption  = "Monitoring the Future 12th Grade Surveys (1976-2022)")
-
-p4 
-
-ggsave(file.path(here(outDir, figDir),"scale_averages.png"), p4, 
-       width = 8.5, height = 6.5, dpi = 300, bg = 'white')
+plot(p1)
+invisible(dev.off())
 
 
-p5 <- df_scale_avg %>%  
-  filter(attribute == "happy" | attribute == "lifesat" | index == "Self-concept") %>%
-  filter(vals != 0.00 & vals_low != 0.00 & vals_upp != 0.00) %>%
-  ggplot(aes(x = year, y = vals, color = index, ymin = vals_low, ymax = vals_upp)) +
-  #  geom_ribbon(fill = "lightgrey", linetype = "dotted", alpha=0.1) +
-  #  geom_smooth(alpha = .1, method="loess", se=TRUE, fullrange=FALSE, level=0.95) +
-  geom_line(linewidth = 1, na.rm=TRUE) +
-  facet_grid(. ~ index) +
-  theme_minimal() +
-  theme(legend.position = "none",
-        panel.grid.minor = element_blank()) +
-  scale_x_continuous(limits = c(1984, 2025), breaks = c(1985, 1995, 2005, 2015, 2025)) +
-  labs( x        = " ", 
-        y        = " ", 
-        title    = "Trends in happiness, life satisfaction, & self-concept (esteem + derogation)",
-        subtitle = " ",
-        caption  = "Monitoring the Future 12th Grade Surveys (1976-2023)")
-p5 
-
-ggsave(file.path(here(outDir, figDir),"scale_averages2.png"), p5, 
-       width = 8.5, height = 6.5, dpi = 300, bg = 'white')
-
-
-## REGRESSIONS -----------------------------------------------------------------
-
-write.dta(data, file = file.path(outDir, "data.dta"))
-
-data$gdsp   <- relevel(data$gdsp,   ref = "Very good")
-data$gdpa   <- relevel(data$gdpa,   ref = "Very good")
-data$gdwk   <- relevel(data$gdwk,   ref = "Very good")
-
-## Happiness
-mod.ha.sp   <- glm(happy_N_std ~ gdsp * year, data = data, weights=svyweight)
-mod.ha.pa   <- glm(happy_N_std ~ gdpa * year, data = data, weights=svyweight)
-mod.ha.wk   <- glm(happy_N_std ~ gdwk * year, data = data, weights=svyweight)
-
-avg.ha.sp   <- avg_predictions(mod.ha.sp, by = c("year", "gdsp"))
-avg.ha.pa   <- avg_predictions(mod.ha.pa, by = c("year", "gdpa"))
-avg.ha.wk   <- avg_predictions(mod.ha.wk, by = c("year", "gdwk"))
-
-## Life satisfaction
-mod.ls.sp   <- glm(lifesat_N_std ~ gdsp * year, data = data, weights=svyweight)
-mod.ls.pa   <- glm(lifesat_N_std ~ gdpa * year, data = data, weights=svyweight)
-mod.ls.wk   <- glm(lifesat_N_std ~ gdwk * year, data = data, weights=svyweight)
-
-avg.ls.sp   <- avg_predictions(mod.ls.sp, by = c("year", "gdsp"))
-avg.ls.pa   <- avg_predictions(mod.ls.pa, by = c("year", "gdpa"))
-avg.ls.wk   <- avg_predictions(mod.ls.wk, by = c("year", "gdwk"))
-
-## Self-concept
-mod.sc.sp   <- glm(selfconcept_std ~ gdsp * year, data = data, weights=svyweight)
-mod.sc.pa   <- glm(selfconcept_std ~ gdpa * year, data = data, weights=svyweight)
-mod.sc.wk   <- glm(selfconcept_std ~ gdwk * year, data = data, weights=svyweight)
-
-avg.sc.sp   <- avg_predictions(mod.sc.sp, by = c("year", "gdsp"))
-avg.sc.pa   <- avg_predictions(mod.sc.pa, by = c("year", "gdpa"))
-avg.sc.wk   <- avg_predictions(mod.sc.wk, by = c("year", "gdwk"))
-
-# Matching and identifying columns
-colnames(avg.ha.sp)[colnames(avg.ha.sp)=="gdsp"] <- "good"
-colnames(avg.ha.pa)[colnames(avg.ha.pa)=="gdpa"] <- "good"
-colnames(avg.ha.wk)[colnames(avg.ha.wk)=="gdwk"] <- "good"
-
-colnames(avg.ls.sp)[colnames(avg.ls.sp)=="gdsp"] <- "good"
-colnames(avg.ls.pa)[colnames(avg.ls.pa)=="gdpa"] <- "good"
-colnames(avg.ls.wk)[colnames(avg.ls.wk)=="gdwk"] <- "good"
-
-colnames(avg.sc.sp)[colnames(avg.sc.sp)=="gdsp"] <- "good"
-colnames(avg.sc.pa)[colnames(avg.sc.pa)=="gdpa"] <- "good"
-colnames(avg.sc.wk)[colnames(avg.sc.wk)=="gdwk"] <- "good"
-
-avg.ha.sp$cat     <- "Spouse" 
-avg.ha.pa$cat     <- "Parent" 
-avg.ha.wk$cat     <- "Worker" 
-avg.ls.sp$cat     <- "Spouse" 
-avg.ls.pa$cat     <- "Parent" 
-avg.ls.wk$cat     <- "Worker" 
-avg.sc.sp$cat     <- "Spouse" 
-avg.sc.pa$cat     <- "Parent" 
-avg.sc.wk$cat     <- "Worker" 
-
-avg.ha.sp$index   <- "Happiness" 
-avg.ha.pa$index   <- "Happiness" 
-avg.ha.wk$index   <- "Happiness" 
-avg.ls.sp$index   <- "Life satisfaction" 
-avg.ls.pa$index   <- "Life satisfaction" 
-avg.ls.wk$index   <- "Life satisfaction" 
-avg.sc.sp$index   <- "Self-concept" 
-avg.sc.pa$index   <- "Self-concept" 
-avg.sc.wk$index   <- "Self-concept" 
-
-avg_all <- rbind(avg.ha.sp, avg.ha.pa, avg.ha.wk, 
-                 avg.ls.sp, avg.ls.pa, avg.ls.wk,
-                 avg.sc.sp, avg.sc.pa, avg.sc.wk)
-
-avg_all$good <- factor(avg_all$good, 
-                       levels=c('Very good', 'Good', 'Fairly good', 
-                                'Not so good', 'Poor'))
-
-p6 <- avg_all %>%
-  ggplot(aes(x = year, y = estimate, color = cat, ymin = conf.low, ymax = conf.high)) +
-  geom_line(linewidth = 1, na.rm=TRUE) +
-  facet_grid(good ~ index) +
-  theme(panel.grid.minor = element_blank()) +
-  ylim(-1.5, 0.5) +
-  labs( x        = " ", 
-        y        = " ", 
-        title    = "Trends in happiness, life satisfaction, & self-concept",
-        subtitle = "by expected work-family roles",
-        caption  = "Monitoring the Future 12th Grade Surveys (1984-2022)")
-
-p6
-
-ggsave(file.path(here(outDir, figDir),"predicted trends.png"), p6, 
-       width = 8.5, height = 6.5, dpi = 300, bg = 'white')
-
+## Stacked bar chart <- syntax as sample for Fig2
+pp_sp %>%
+  ggplot(aes(x = x, y = predicted, fill = response.level, 
+             ymin = conf.low, ymax = conf.high)) +
+  geom_bar(position="fill", stat="identity") +
+  theme_minimal() 
 

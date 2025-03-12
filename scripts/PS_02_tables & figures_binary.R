@@ -61,13 +61,13 @@ ggsave(file.path(here(outDir, figDir),"PS_fig01.png"), p1,
 
 ## Logit Regressions -----------------------------------------------------------
 
-m1_wk <- glm(gdwk ~ sex + race + momed + region + year.c + year.sq + religion + famstru.d + selfconcept,
+m1_wk <- glm(gdwk ~ sex + race + momed + region + year.c + year.c.sq + religion + famstru.d + selfconcept,
              data = data, weights = svyweight, family = "binomial")
 
-m1_sp <- glm(gdsp ~ sex + race + momed + region + year.c + year.sq + religion + famstru.d + selfconcept,
+m1_sp <- glm(gdsp ~ sex + race + momed + region + year.c + year.c.sq + religion + famstru.d + selfconcept,
              data = data, weights = svyweight, family = "binomial")
 
-m1_pa <- glm(gdpa ~ sex + race + momed + region + year.c + year.sq + religion + famstru.d + selfconcept,
+m1_pa <- glm(gdpa ~ sex + race + momed + region + year.c + year.c.sq + religion + famstru.d + selfconcept,
              data = data, weights = svyweight, family = "binomial")
 
 ## Turn into tidy dataframes
@@ -109,3 +109,6 @@ modelsummary(mods,
              fmt = fmt_decimal(digits = 3, pdigits = 3),
              output = "huxtable") %>%
   huxtable::as_flextable()
+
+
+wk_pp <- avg_predictions(m1_wk, variables = "year.c")

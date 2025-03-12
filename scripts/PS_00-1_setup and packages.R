@@ -27,6 +27,8 @@ pacman::p_load(
   marginaleffects, # average marginal effects
   ggeffects,       # predicted probabilities
   effects,         # required for ggeffects
+  patchwork,       # combine sep facet plots
+  ragg,            # save high quality plots
   scales,          # percentages for ggplots axes
   psych,           # alphas
   ggcorrplot,      # correlation matrix plot

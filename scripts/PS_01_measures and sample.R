@@ -74,12 +74,13 @@ data$year[is.na(data$year)]  <- "1978" # 34 people in 1978 have a missing year v
 
 data$year <- as.integer(data$year)
 
-# data <- data %>%
-#  # combining 2020 samples due to sample size issue
-#  mutate(year = case_when(
-#    year == 2020 ~ 2022,
-#    year == 2021 ~ 2022,
-#    TRUE ~ year))
+data <- data %>%
+  # combining 2020 samples due to sample size issue
+  mutate(year = case_when(
+    year == 2020 ~ 2023,
+    year == 2021 ~ 2023,
+    year == 2022 ~ 2023,
+    TRUE ~ year))
 
 ### put data in chronological order, center, & square
 data <- data %>%
@@ -313,7 +314,7 @@ data <- data %>%
       race == "White" & sex == "Women" ~ "White women",
       race == "Black" & sex == "Men"   ~ "Black men",
       race == "Black" & sex == "Women" ~ "Black women",
-      TRUE                                ~  NA_character_),
+      TRUE                             ~  NA_character_),
     # Mothers' Education
     momed = fct_case_when(
       momed == "1" | momed == "GRDE SCH" | momed == "GRDE SCH:(1)" | momed == "Completed grade school or less"     |
@@ -322,8 +323,8 @@ data <- data %>%
       momed == "4" | momed == "SOME CLG" | momed == "SOME CLG:(4)" | momed ==  "Some college"                      ~ "No college degree",
       momed == "5" | momed == "CLG GRAD" | momed == "CLG GRAD:(5)" | momed ==  "Completed college"                 |
       momed == "6" | momed == "GRAD SCH" | momed == "GRAD SCH:(6)" | momed ==  "Graduate or professional school"   ~ "Completed college",
-      momed == "7" | momed == "MISSING"  | momed == "DK:(7)"       | momed ==  "Don't know, or does not apply"     | # These don't match but missing so doesn't matter
-        TRUE                                                                                                         ~  NA_character_ ),
+      momed == "7" | momed == "MISSING"  | momed == "DK:(7)"       | momed ==  "Don't know, or does not apply"     | # These don't match but missing who cares
+        TRUE                                                                                                       ~  NA_character_ ),
     # Religiosity
     religion = fct_case_when(
       religion == 1 | religion == "NEVER"    | religion == "NEVER:(1)"    | religion == "Never"                     ~ "Never",

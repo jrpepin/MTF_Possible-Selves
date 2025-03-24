@@ -74,13 +74,13 @@ data$year[is.na(data$year)]  <- "1978" # 34 people in 1978 have a missing year v
 
 data$year <- as.integer(data$year)
 
-data <- data %>%
+#data <- data %>%
   # combining 2020 samples due to sample size issue
-  mutate(year = case_when(
-    year == 2020 ~ 2023,
-    year == 2021 ~ 2023,
-    year == 2022 ~ 2023,
-    TRUE ~ year))
+ # mutate(year = case_when(
+  #  year == 2020 ~ 2023,
+  #  year == 2021 ~ 2023,
+  #  year == 2022 ~ 2023,
+  #  TRUE ~ year))
 
 ### put data in chronological order, center, & square
 data <- data %>%
@@ -305,16 +305,16 @@ data <- data %>%
       TRUE ~ NA_character_),
     # Race
     race = fct_case_when(
-      raceeth == 0 | raceeth == "WHITE"    | raceeth == "WHITE: (2)"    | raceeth == "White (Caucasian)"          | raceeth == "WHITE:(2)" ~ "White",
-      raceeth == 1 | raceeth == "BLACK"    | raceeth == "BLACK: (1)"    | raceeth == "Black or African-American"  | raceeth == "BLACK:(1)" ~ "Black",
-      TRUE ~ NA_character_),
+      raceeth == 0 | raceeth == "WHITE"    | raceeth == "WHITE: (2)"    | raceeth == "White (Caucasian)"          | raceeth == "WHITE:(2)"    ~ "White",
+      raceeth == 1 | raceeth == "BLACK"    | raceeth == "BLACK: (1)"    | raceeth == "Black or African-American"  | raceeth == "BLACK:(1)"    ~ "Black",
+      TRUE ~ "Another race"),
     # Racesex
     racesex = fct_case_when(
       race == "White" & sex == "Men"   ~ "White men",
       race == "White" & sex == "Women" ~ "White women",
       race == "Black" & sex == "Men"   ~ "Black men",
       race == "Black" & sex == "Women" ~ "Black women",
-      TRUE                             ~  NA_character_),
+      TRUE ~  NA_character_),
     # Mothers' Education
     momed = fct_case_when(
       momed == "1" | momed == "GRDE SCH" | momed == "GRDE SCH:(1)" | momed == "Completed grade school or less"     |
@@ -331,29 +331,29 @@ data <- data %>%
       religion == 2 | religion == "RARELY"   | religion == "RARELY:(2)"   | religion == "Rarely"                    ~ "Rarely",
       religion == 3 | religion == "1-2X/MO"  | religion == "1-2X/MO:(3)"  | religion == "Once or twice a month"     ~ "Once or twice a month",
       religion == 4 | religion == "1/WK OR+" | religion == "1/WK OR+:(4)" | religion == "About once a week or more" ~ "About once a week or more",
-      TRUE        ~  NA_character_ ),
+      TRUE  ~  NA_character_ ),
     # Family Structure
     mother = fct_case_when(
       mother == 1 | mother == "MARKED"   | mother == "MARKED:(1)"   | mother == "Yes" ~ "YES",
       mother == 0 | mother == "NT MARKD" | mother == "NT MARKD:(0)" | mother == "No"  ~ "NO",
-      TRUE        ~ NA_character_),
+      TRUE  ~ NA_character_),
     father = fct_case_when(
       father == 1 | father == "MARKED"   | father == "MARKED:(1)"   | father == "Yes" ~ "YES",
       father == 0 | father == "NT MARKD" | father == "NT MARKD:(0)" | father == "No"  ~ "NO",
-      TRUE        ~ NA_character_),
+      TRUE ~ NA_character_),
     famstru = fct_case_when(
       mother == "YES" & father == "YES" ~ "Both Mother & Father",
       mother == "YES" & father == "NO"  ~ "Mother Only",
       mother == "NO"  & father == "YES" ~ "Father Only",
       mother == "NO"  & father == "NO"  ~ "Neither Mother/Father",
-      TRUE                              ~  NA_character_),
+      TRUE ~  NA_character_),
     # Family Structure Dummy
     famstru.d = case_when(
       famstru == "Both Mother & Father"    ~ 1,
       famstru == "Mother Only"   | 
         famstru == "Father Only" | 
         famstru == "Neither Mother/Father" ~ 0,
-      TRUE                                ~ NA_integer_),
+      TRUE ~ NA_integer_),
     # Region
     region = fct_case_when(
       region == 1 | region == "NE" | region == "NE:(1)"   | region == "NORTHEAST"     | region == "NORTHEAST:(1)" ~ "Northeast",

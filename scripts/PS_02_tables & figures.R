@@ -34,8 +34,10 @@ tab1 <- mtf_svy %>%
     label  = '**Variable**',
     all_stat_cols() ~ "**{level}**  
     N = {style_number(n_unweighted)} ({style_percent(p)}%)") %>%
+  modify_footnote(c(all_stat_cols()) ~ NA) %>%
   modify_caption("Table 01. Weighted statistics of the pooled analytic sample") %>%
   as_flex_table() 
+
 #  add_footer_lines("notes")
 
 tab1 # show table
@@ -308,7 +310,7 @@ p1_other <- df_pp %>%
 ## Combine plots
 p1 <- (p1_very | p1_other) + plot_layout(widths = c(1, 2)) +
   plot_annotation('How good do you think you would be as a _________', 
-                  caption = "Monitoring the Future 12th Grade Surveys (1984-2023)")
+                  caption = "Monitoring the Future 12th Grade Surveys (1976-2023)")
 
 p1
 
@@ -445,7 +447,7 @@ lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
 p2 <- df_pp_sex %>%
   ggplot(aes(x = x, y = predicted, color = response.level,
              ymin = conf.low, ymax = conf.high)) +
-  geom_errorbar(width = 0.2, color="grey80") +
+#  geom_errorbar(width = 0.2, color="grey80") +
   geom_line(aes(linetype = group), linewidth = 1) +
   facet_wrap(~cat) +
   theme_minimal() +
@@ -463,7 +465,7 @@ p2 <- df_pp_sex %>%
         title    = "How good do you think you would be as a _________",
         color    = "Response level",
         linetype = " ",
-        caption  = "Monitoring the Future 12th Grade Surveys (1984-2023)") 
+        caption  = "Monitoring the Future 12th Grade Surveys (1976-2023)") 
 
 p2
 

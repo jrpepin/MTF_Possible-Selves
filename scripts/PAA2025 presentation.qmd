@@ -1,0 +1,354 @@
+---
+title: "Social Change in Positive Possible Selves:"  
+subtitle: "Youth’s Views of Themselves in Adult Social Roles"
+author: 
+  - name: "<br> Joanna R. Pepin"
+    affiliations: 
+     - "*University of Toronto*"
+  - name: "<br> Melissa A. Milkie" 
+    affiliations: 
+     - "*University of Toronto*"
+format: 
+  revealjs:
+    controls: true
+    theme: [default, custom.scss]
+    slide-number: c
+embed-resources: true
+project:
+  execute-dir: MTF_Possible-Selves
+filters:
+    - openlinksinnewpage
+editor: 
+  markdown: 
+    wrap: sentence
+include-in-header:
+  - text: |
+      <style>
+      #title-slide .title {
+        font-size: 2.00em;
+      }
+      </style>
+# title-slide-attributes: 
+#       data-background-image: ../images/qr-code.png
+#       data-background-size: 200px
+#       data-background-position: "95% 95%"
+---
+
+```{r warning = FALSE, error = FALSE, message = FALSE, echo=FALSE, results='hide'}
+# Loading libraries
+library(tidyverse)
+library(gtsummary)
+library(gghighlight)
+library(scales)
+
+# Define color palette
+c_palette <- c("#18BC9C",
+               "#3498DB",
+               "#F39C12",
+               "#E74C3C")
+
+# Run project scripts
+source("PS_00-1_setup and packages.R")
+#load("mtf_form2.Rda")
+source("PS_01_measures and sample.R")
+
+
+```
+
+
+#  {#slide2-id data-menu-title="Background"}
+
+:::: columns
+
+::: {.column style="width: 50%;"}
+![](../images/marriage-rate.png)
+
+:::
+
+::: {.column style="width: 50%;"}
+![](../images/birth-rate.png)
+
+:::
+
+::::
+
+## Possible Selves {#slide3-id data-menu-title="Gap"}
+
+##  {#slide4-id data-menu-title="Research Questions"}
+
+<h3>Research Questions</h3>
+
+::: {.incremental .highlight-last}
+1.  Are there changes in youth's views of their possible selves as spouses, parents, and workers?\
+2.  Do these projected future selves vary by gender?\
+:::
+
+:::: {.content-visible when-profile="speaker"}
+::: notes
+[**\<click\>**]{style="color: #E74C3C;"}\
+First RQ: \[read it\]\
+
+[**\<click\>**]{style="color: #E74C3C;"}\
+Second RQ \[read it\]\
+:::
+::::
+
+# MTF {#slide5-id data-menu-title="Data"}
+
+Monitoring the Future Surveys 1976-2023
+
+<hr>
+
+*nationally representative sample of U.S. 12th-graders*\
+[N = 99,399]{style="color: #E74C3C;"}
+
+<br>\
+<br>\
+<br>
+
+::: aside
+<https://www.icpsr.umich.edu/web/ICPSR/series/35>
+:::
+
+#  {#slide6-id data-menu-title="Dependent Variables" background-image="../images/questionmark-gray.png" background-size="100px" background-repeat="repeat"}
+
+::: {style="color: #e74c3c; font-size: 150%; font-family: 'Shadows Into Light'"}
+**How good do you think you would be as a:**
+
+1.  husband or wife?
+2.  parent?
+3.  worker on a job?
+:::
+
+<br>
+
+::: {style="font-size: 90%;"}
+**Response options**: (1) poor (2) not so good (3) fairly good (4) good (5) very good
+:::
+
+# Key IVs {#slide7-id data-menu-title="Independent Variables"}
+
+-   Year
+-   Year^2^
+-   Gender
+
+# {#slide8-id data-menu-title="Sample"}
+
+<h3>Weighted statistics of the pooled sample</h3>
+
+```{r results = 'asis', warning = FALSE}
+mtf_svy %>%
+  gtsummary::select(c(sex, momed, race, region)) %>%
+  tbl_svysummary(
+    by = sex,
+    type  = list(
+      c(momed) ~ "dichotomous"),
+    value = list(momed = "Completed college"),
+    label = list(
+      momed           ~ "Mom completed college",
+      race            ~ "Race identity",
+      region          ~ "Region"),
+    statistic = list(
+      all_continuous()  ~ "{median} ({p25}, {p75})",
+      all_categorical() ~ "{p}%"))  %>%
+  add_overall() %>%
+#  add_p() %>%
+  # add_p(test = list(
+  #all_continuous() ~ "svy.t.test",
+  #all_categorical() ~ "svy.wald.test")) %>%
+  modify_header(
+    label  = '**Variable**',
+    all_stat_cols() ~ "**{level}**  
+    N = {style_number(n_unweighted)} ({style_percent(p)}%)") %>%
+  modify_footnote(c(all_stat_cols()) ~ NA)
+```
+
+# Findings {#slide9-id data-menu-title="Results"}
+
+## {#slide10-id data-menu-title="Figure 1"}
+
+'How good do you think you would be as a _________'
+
+```{r warning = FALSE}
+
+polr1.sp  <- polr(gdsp ~ year.c + I(year.c^2),
+                  data = data, weights = svyweight, Hess = T)
+polr1.pa  <- polr(gdpa ~ year.c + I(year.c^2),
+                  data = data, weights = svyweight, Hess = T)
+polr1.wk  <- polr(gdwk ~ year.c + I(year.c^2),
+                  data = data, weights = svyweight, Hess = T)
+
+## Average Predictions 
+pp_sp   <- predict_response(polr1.sp, terms = c("year.c [all]"))
+pp_pa   <- predict_response(polr1.pa, terms = c("year.c [all]"))
+pp_wk   <- predict_response(polr1.wk, terms = c("year.c [all]"))
+
+## Combine dfs
+pp_sp$cat    <- "Spouse" 
+pp_pa$cat    <- "Parent" 
+pp_wk$cat    <- "Worker" 
+
+df_pp <- rbind(pp_wk, pp_sp, pp_pa)
+
+## Tidy variables
+df_pp$response.level <- factor(df_pp$response.level, 
+                               levels=c("Very good", 
+                                        "Good", 
+                                        "Fairly good", 
+                                        "Not so good", 
+                                        "Poor"))
+
+df_pp$cat <- factor(df_pp$cat, 
+                    levels=c("Worker", 
+                             "Spouse", 
+                             "Parent"))
+
+lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
+
+
+p1_very <- df_pp %>%
+  filter(response.level == "Very good") %>%
+  ggplot(aes(x = x, y = predicted, color = cat, 
+             ymin = conf.low, ymax = conf.high)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~response.level) +
+  theme_minimal() + 
+  theme(#legend.position = c(1, 0),
+    #legend.justification = c(1, 0),
+    legend.position = "top",
+    legend.title=element_blank(),
+    strip.text.x = element_text(face = "bold"),
+    panel.grid.minor = element_blank()) +
+  scale_y_continuous(breaks = c(0., .25, .5, .75), limits=c(0, .75), labels = scales::percent) +
+  scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
+  labs( x        = " ", 
+        y        = " ")
+
+p1_other <- df_pp %>%
+  filter(response.level != "Very good") %>%
+  ggplot(aes(x = x, y = predicted, color = cat, 
+             ymin = conf.low, ymax = conf.high)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~response.level) +
+  theme_minimal() + 
+  theme(#legend.position = c(1, 0),
+    #legend.justification = c(1, 0),
+    legend.position = "none",
+    legend.title=element_blank(),
+    strip.text.x = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.spacing = unit(1.1, "cm", data = NULL)) +
+  scale_y_continuous(breaks = c(0., .25, .5), limits=c(0, .5), labels = scales::percent) +
+  scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
+  labs( x        = " ", 
+        y        = " ")
+
+## Combine plots
+p1 <- (p1_very | p1_other) + plot_layout(widths = c(1, 2)) 
+
+p1
+```
+
+::: aside
+Monitoring the Future 12th Grade Surveys (1976-2023)
+:::
+
+## {#slide11-id data-menu-title="Figure 2"}
+
+'How good do you think you would be as a _________'
+
+```{r warning = FALSE}
+polr2.sp.RS  <- polr(gdsp ~ year.c * sex + I(year.c^2) * sex +
+                       momed + race + region,
+                     data = data, weights = svyweight, Hess = T)
+
+polr2.pa.RS  <- polr(gdpa ~ year.c * sex + I(year.c^2) * sex  + 
+                       momed + race + region,
+                     data = data, weights = svyweight, Hess = T)
+
+polr2.wk.RS  <- polr(gdwk ~ year.c * sex + I(year.c^2) * sex  + 
+                       momed + race + region,
+                     data = data, weights = svyweight, Hess = T)
+
+## Average Predictions 
+pp_sp_sex   <- predict_response(polr2.sp.RS, terms = c("year.c [all]", "sex"))
+pp_pa_sex   <- predict_response(polr2.pa.RS, terms = c("year.c [all]", "sex"))
+pp_wk_sex   <- predict_response(polr2.wk.RS, terms = c("year.c [all]", "sex"))
+
+## Combine dfs
+pp_sp_sex$cat    <- "Spouse" 
+pp_pa_sex$cat    <- "Parent" 
+pp_wk_sex$cat    <- "Worker" 
+
+df_pp_sex <- rbind(pp_wk_sex, pp_sp_sex, pp_pa_sex)
+
+## Tidy variables
+df_pp_sex$response.level <- factor(df_pp_sex$response.level, 
+                               levels=c("Very good", 
+                                        "Good", 
+                                        "Fairly good", 
+                                        "Not so good", 
+                                        "Poor"))
+
+df_pp_sex$cat <- factor(df_pp_sex$cat, 
+                    levels=c("Spouse", 
+                             "Parent",
+                             "Worker"))
+
+lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
+
+
+## Draw figure
+
+p2 <- df_pp_sex %>%
+  ggplot(aes(x = x, y = predicted, color = response.level,
+             ymin = conf.low, ymax = conf.high)) +
+#  geom_errorbar(width = 0.2, color="grey80") +
+  geom_line(aes(linetype = group), linewidth = 1) +
+  facet_wrap(~cat) +
+  theme_minimal() +
+  theme(#legend.position = c(1, 0),
+    #legend.justification = c(1, 0),
+ #   plot.title = element_text(face = "bold"),
+    legend.position  = "right",
+    strip.text.x     = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.spacing    = unit(1.1, "cm", data = NULL)) +
+  scale_y_continuous(breaks = c(0., .25, .5, .75), limits=c(0, .75), labels = scales::percent) +
+  scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
+  labs( x        = " ", 
+        y        = " ",
+        color    = "Response level",
+        linetype = " ") 
+
+p2
+
+
+```
+
+::: aside
+Monitoring the Future 12th Grade Surveys (1976-2023)
+:::
+
+## Implications {#slide12-id data-menu-title="Implications"}
+
+
+# Thank you!
+
+::: columns
+::: {.column width="65%"}
+Joanna R. Pepin\
+*University of Toronto*
+
+<br>
+
+Melissa A. Milkie\
+*University of Toronto*
+:::
+
+::: {.column width="35%"}
+[***Slides:***]{style="color: #E74C3C;"}\
+QR code will go here 
+![](../images/qr-code.png){fig-align="center" width="100%"}
+:::
+:::

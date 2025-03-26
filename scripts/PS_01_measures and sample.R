@@ -431,13 +431,13 @@ data <- data %>%
   # exclude cases missing on DVs
   drop_na(c(gdwk, gdsp, gdpa)) %>%
   # exclude cases missing on key IV
-  drop_na(c(sex, race, momed, religion, famstru, region)) %>%
-  drop_na(c(happy, lifesat, 
-            posatt, worth, welloth, satself, 
-            proud, nogood, wrong, lifeuse)) %>%
-  filter(decade != "1970s")
+  drop_na(c(sex, race, momed, region)) 
+#  drop_na(c(happy, lifesat, 
+#            posatt, worth, welloth, satself, 
+#            proud, nogood, wrong, lifeuse)) %>%
+#  filter(decade != "1970s")
 
-data$decade <- droplevels(data$decade)
+#data$decade <- droplevels(data$decade)
 
 # Analytic sample size
 count(data)
@@ -446,75 +446,75 @@ counts <- data %>%
   group_by(year) %>%
   count()
 
-## Construct Scales ------------------------------------------------------------
-### make after drop missing obvs
-
-cor_matrix <- cor(data[, c('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
-                           'proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N')], use = "pairwise.complete.obs")
-p0 <- ggcorrplot(cor_matrix, type = "lower", lab = TRUE)
-
-p0
-
-ggsave(file.path(here(outDir, figDir),"alphas.png"), p0, width = 6.5, height = 6.5, dpi = 300, bg = 'white')
-
-# Generate the alphas
-esteem <- data %>%
-  select('posatt_N', 'worth_N', 'welloth_N', 'satself_N') %>%
-  cov() %>%
-  psych::alpha()
-
-derogation <- data %>%
-  select('proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N') %>%
-  cov() %>%
-  psych::alpha()
-
-selfconcept <- data %>%
-  select('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
-         -'proud_N', -'nogood_N', -'wrong_N', -'lifeuse_N') %>%
-  cov() %>%
-  psych::alpha(check.keys = TRUE) # this auto reverse codes the derogation items
-
-wellbeing <- data %>%
-  select('happy_N', 'lifesat_N') %>%
-  cov() %>%
-  psych::alpha()
-
-index <- c('esteem', 'derogation', 'selfconcept', 'wellbeing')
-alphas <- c(esteem$total$raw_alpha, derogation$total$raw_alpha, 
-            selfconcept$total$raw_alpha, wellbeing$total$raw_alpha)
-alpha_df <- data.frame(index, alphas)
-alpha_df$alphas <- round(alpha_df$alphas, digits = 2)
-write_xlsx(alpha_df, path = file.path(outDir, "alphas.xlsx"))
-
-remove(cor_matrix, esteem, derogation, selfconcept, wellbeing)
-
-scoring_key = list(
-  esteem      = c('posatt_N', 'worth_N', 'welloth_N', 'satself_N'),
-  derogation  = c('proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N'),
-  selfconcept = c('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
-                  '-proud_N', '-nogood_N', '-wrong_N', '-lifeuse_N'))
-
-scales <- as_tibble(psych::scoreFast(
-  keys   = scoring_key, 
-  items  = data,
-  totals = FALSE)) # average scores
-
-data$esteem      <- scales$`esteem-A`
-data$derogation  <- scales$`derogation-A`
-data$selfconcept <- scales$`selfconcept-A`
-
-data <- data %>%
-# Standardize new variables
-mutate(across(
-  .cols = c('esteem', 'derogation', 'selfconcept'), 
-  .fns = scale,
-  .names = "{.col}_std")) %>%
-  # Back to numeric variable
-  mutate(across(c('esteem_std', 'derogation_std', 
-                  'selfconcept_std'), as.numeric)) %>%
-  # Round to 2 decimal places
-  mutate(across(c('esteem_std', 'derogation_std', 
-                  'selfconcept_std'), round, 2))
+# ## Construct Scales ------------------------------------------------------------
+# ### make after drop missing obvs
+# 
+# cor_matrix <- cor(data[, c('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
+#                            'proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N')], use = "pairwise.complete.obs")
+# p0 <- ggcorrplot(cor_matrix, type = "lower", lab = TRUE)
+# 
+# p0
+# 
+# ggsave(file.path(here(outDir, figDir),"alphas.png"), p0, width = 6.5, height = 6.5, dpi = 300, bg = 'white')
+# 
+# # Generate the alphas
+# esteem <- data %>%
+#   select('posatt_N', 'worth_N', 'welloth_N', 'satself_N') %>%
+#   cov() %>%
+#   psych::alpha()
+# 
+# derogation <- data %>%
+#   select('proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N') %>%
+#   cov() %>%
+#   psych::alpha()
+# 
+# selfconcept <- data %>%
+#   select('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
+#          -'proud_N', -'nogood_N', -'wrong_N', -'lifeuse_N') %>%
+#   cov() %>%
+#   psych::alpha(check.keys = TRUE) # this auto reverse codes the derogation items
+# 
+# wellbeing <- data %>%
+#   select('happy_N', 'lifesat_N') %>%
+#   cov() %>%
+#   psych::alpha()
+# 
+# index <- c('esteem', 'derogation', 'selfconcept', 'wellbeing')
+# alphas <- c(esteem$total$raw_alpha, derogation$total$raw_alpha, 
+#             selfconcept$total$raw_alpha, wellbeing$total$raw_alpha)
+# alpha_df <- data.frame(index, alphas)
+# alpha_df$alphas <- round(alpha_df$alphas, digits = 2)
+# write_xlsx(alpha_df, path = file.path(outDir, "alphas.xlsx"))
+# 
+# remove(cor_matrix, esteem, derogation, selfconcept, wellbeing)
+# 
+# scoring_key = list(
+#   esteem      = c('posatt_N', 'worth_N', 'welloth_N', 'satself_N'),
+#   derogation  = c('proud_N', 'nogood_N', 'wrong_N', 'lifeuse_N'),
+#   selfconcept = c('posatt_N', 'worth_N', 'welloth_N', 'satself_N',
+#                   '-proud_N', '-nogood_N', '-wrong_N', '-lifeuse_N'))
+# 
+# scales <- as_tibble(psych::scoreFast(
+#   keys   = scoring_key, 
+#   items  = data,
+#   totals = FALSE)) # average scores
+# 
+# data$esteem      <- scales$`esteem-A`
+# data$derogation  <- scales$`derogation-A`
+# data$selfconcept <- scales$`selfconcept-A`
+# 
+# data <- data %>%
+# # Standardize new variables
+# mutate(across(
+#   .cols = c('esteem', 'derogation', 'selfconcept'), 
+#   .fns = scale,
+#   .names = "{.col}_std")) %>%
+#   # Back to numeric variable
+#   mutate(across(c('esteem_std', 'derogation_std', 
+#                   'selfconcept_std'), as.numeric)) %>%
+#   # Round to 2 decimal places
+#   mutate(across(c('esteem_std', 'derogation_std', 
+#                   'selfconcept_std'), round, 2))
 
 # Create survey data -----------------------------------------------------------
 mtf_svy <- data %>%

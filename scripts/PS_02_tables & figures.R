@@ -256,14 +256,15 @@ df_pp$cat <- factor(df_pp$cat,
                              "Spouse", 
                              "Parent"))
 
-lables_year <- c("1984", "1995", "2005", "2015", "2023")
-
 data %>%
   filter(
-    year == 1984 | year == 1995 | 
+    year == 1976 |
+    year == 1985 | year == 1995 | 
     year == 2005 | year == 2015 | year == 2023) %>%
   distinct(year.c)
 
+
+lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
 
 ## Plot panels
 
@@ -281,7 +282,7 @@ p1_very <- df_pp %>%
     strip.text.x = element_text(face = "bold"),
     panel.grid.minor = element_blank()) +
   scale_y_continuous(breaks = c(0., .25, .5, .75), limits=c(0, .75), labels = scales::percent) +
-  scale_x_continuous(breaks=c(-12.6, -1.55, 8.45, 18.45, 26.45), labels = lables_year) +
+  scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
   labs( x        = " ", 
         y        = " ")
 
@@ -300,7 +301,7 @@ p1_other <- df_pp %>%
     panel.grid.minor = element_blank(),
     panel.spacing = unit(1.1, "cm", data = NULL)) +
   scale_y_continuous(breaks = c(0., .25, .5), limits=c(0, .5), labels = scales::percent) +
-  scale_x_continuous(breaks=c(-12.6, -1.55, 8.45, 18.45, 26.45), labels = lables_year) +
+  scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
   labs( x        = " ", 
         y        = " ")
 
@@ -399,7 +400,7 @@ table3 <- modelsummary(mods.3,
                         fmt = fmt_decimal(digits = 3, pdigits = 3),
                         output = "huxtable") %>%
   huxtable::as_flextable()  %>%
-  add_footer_lines("Notes: 61,404")
+  add_footer_lines("Notes: 99,399")
 
 table3
 
@@ -436,15 +437,15 @@ df_pp_sex$cat <- factor(df_pp_sex$cat,
                              "Parent",
                              "Worker"))
 
-lables_year <- c("1984", "1995", "2005", "2015", "2023")
+lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
 
 
 ## Draw figure
 
 p2 <- df_pp_sex %>%
-  #  filter(response.level == "Very good") %>%
   ggplot(aes(x = x, y = predicted, color = response.level,
              ymin = conf.low, ymax = conf.high)) +
+  geom_errorbar(width = 0.2, color="grey80") +
   geom_line(aes(linetype = group), linewidth = 1) +
   facet_wrap(~cat) +
   theme_minimal() +
@@ -456,7 +457,7 @@ p2 <- df_pp_sex %>%
     panel.grid.minor = element_blank(),
     panel.spacing    = unit(1.1, "cm", data = NULL)) +
   scale_y_continuous(breaks = c(0., .25, .5, .75), limits=c(0, .75), labels = scales::percent) +
-  scale_x_continuous(breaks=c(-12.6, -1.55, 8.45, 18.45, 26.45), labels = lables_year) +
+  scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
   labs( x        = " ", 
         y        = " ",
         title    = "How good do you think you would be as a _________",

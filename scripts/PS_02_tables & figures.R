@@ -5,10 +5,11 @@
 #-------------------------------------------------------------------------------
 
 # Create table 01 --------------------------------------------------------------
+mtf_svy$variables$race_char <- as.character(mtf_svy$variables$race) # avoiding weird NAs!
+
 tab1 <- mtf_svy %>%
-  gtsummary::select(c(gdsp, gdpa, gdwk,   
-                      #decade, 
-                      sex, momed, race, region)) %>%
+  gtsummary::select(c(gdsp, gdpa, gdwk,
+                      sex, momed, race_char, region)) %>%
   tbl_svysummary(
     by = sex,
 #    type = list(c(happy_N_std, lifesat_N_std) ~ "continuous2"),
@@ -20,11 +21,11 @@ tab1 <- mtf_svy %>%
       gdpa            ~ "Expectations as parent",
       gdwk            ~ "Expectations as worker",
       momed           ~ "Mom completed college",
-      race            ~ "Race identity",
+      race_char       ~ "Race identity",
       region          ~ "Region"),
     statistic = list(
       all_continuous()  ~ "{median} ({p25}, {p75})",
-      all_categorical() ~ "{p}%"))  %>%
+      all_categorical() ~ "{n} {p}%"))  %>%
   add_overall() %>%
 #  add_p() %>%
   # add_p(test = list(

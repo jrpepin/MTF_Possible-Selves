@@ -10,9 +10,9 @@
 # source(PS_00-1_setup and packages.R)
 
 # DATA -------------------------------------------------------------------------
-#load(paste0(dataDir, "/mtf_form2.Rda"))
+load(paste0(dataDir, "/mtf_form2.Rda"))
 ### FIX THIS SO IT PULLS FROM THE DATADIR LATER!
-load("mtf_form2.Rda")
+#load("mtf_form2.Rda")
 
 
 ## Load the data and create a new df containing only the variables of interest.  
@@ -521,6 +521,8 @@ counts <- data %>%
 
 # Create survey data -----------------------------------------------------------
 mtf_svy <- data %>%
+  select(c(gdsp, gdpa, gdwk, svyweight,  
+           sex, momed, race, region)) %>%
   # weight data
   as_survey_design(id = 1,
                    weights = svyweight)

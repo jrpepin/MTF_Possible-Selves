@@ -72,7 +72,9 @@ source("PS_01_measures and sample.R")
 
 ::::
 
-## Possible Selves {#slide3-id data-menu-title="Gap"}
+
+## Possible Selves {#slide3-id background-image="../images/future.png" background-size="contain" data-menu-title="Gap"}
+
 
 ##  {#slide4-id data-menu-title="Research Questions"}
 
@@ -111,6 +113,8 @@ Monitoring the Future Surveys 1976-2023
 :::
 
 #  {#slide6-id data-menu-title="Dependent Variables" background-image="../images/questionmark-gray.png" background-size="100px" background-repeat="repeat"}
+
+These next questions ask you to guess how well you might do in several different situations. 
 
 ::: {style="color: #e74c3c; font-size: 150%; font-family: 'Shadows Into Light'"}
 **How good do you think you would be as a:**

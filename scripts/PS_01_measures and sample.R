@@ -10,10 +10,7 @@
 # source(PS_00-1_setup and packages.R)
 
 # DATA -------------------------------------------------------------------------
-load(paste0(dataDir, "/mtf_form2.Rda"))
-### FIX THIS SO IT PULLS FROM THE DATADIR LATER!
-#load("mtf_form2.Rda")
-
+load(file.path("data/mtf_form2.Rda"))
 
 ## Load the data and create a new df containing only the variables of interest.  
 data <- mtf_V2 %>%

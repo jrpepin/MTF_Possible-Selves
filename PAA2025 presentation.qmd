@@ -1,6 +1,6 @@
 ---
-title: "Social Change in Positive Possible Selves:"  
-subtitle: "Youth’s Views of Themselves in Adult Social Roles"
+title: "Change in Future Selves:"  
+subtitle: "Youths’ Views of Themselves in Adult Caring Roles"
 author: 
   - name: "<br> Joanna R. Pepin"
     affiliations: 
@@ -29,7 +29,7 @@ include-in-header:
       }
       </style>
 # title-slide-attributes: 
-#       data-background-image: ../images/qr-code.png
+#       data-background-image: images/qr-code.png
 #       data-background-size: 200px
 #       data-background-position: "95% 95%"
 ---
@@ -48,40 +48,96 @@ c_palette <- c("#18BC9C",
                "#E74C3C")
 
 # Run project scripts
-source("PS_00-1_setup and packages.R")
-#load("mtf_form2.Rda")
-source("PS_01_measures and sample.R")
+source(file.path("scripts/PS_00-1_setup and packages.R"))
+source(file.path("scripts/PS_01_measures and sample.R"))
 
+```
+
+#  {#slide2-id data-menu-title="Background" }
+
+```{r}
+#| warning: false
+#| fig-width: 9
+#| fig-asp: .618
+
+library(tidyverse)
+library(jsonlite)
+library(ggrepel) 
+library(patchwork)
+
+df.mar <- read.csv("https://ourworldindata.org/grapher/marriage-rate-per-1000-inhabitants.csv?v=1&csvType=filtered&useColumnShortNames=true&time=1970..latest&country=USA~CAN")
+
+df.birth <- read.csv("https://ourworldindata.org/grapher/children-born-per-woman.csv?v=1&csvType=filtered&useColumnShortNames=true&time=1970..latest&country=CAN~USA")
+
+
+data_ends.mar <- df.mar %>%
+  group_by(Entity) %>%
+  top_n(1, Year) 
+
+p1 <- df.mar %>%
+  ggplot(aes(x = Year, y = marriage_rate, color = Entity)) +
+  geom_line(linewidth = 1) +
+  geom_text_repel(aes(label = Code), data = data_ends.mar, size = 4, nudge_x = 1) +
+  theme_minimal() +
+  theme(
+    legend.position     = "none",
+    legend.title        = element_blank(),
+    panel.grid.minor    = element_blank(),
+    panel.grid.major.x  = element_blank(),
+    plot.margin = unit(c(0, 0, 0, 0), "null"),
+    panel.margin = unit(c(0, 0, 0, 0), "null"),
+    plot.subtitle       = element_text(color = "grey50"),
+    plot.caption        = element_text(color = "grey70")) +
+  scale_y_continuous(
+    breaks = seq(0, 12, by=2), 
+    limits = c(0, 12)) +
+  labs( x        = " ", 
+        y        = " ",
+        title    = "Marriage rates",
+        subtitle = "Number of marriages during a given year per 1,000 people",
+        caption  = "ourworldindata.org/grapher/marriage-rate-per-1000-inhabitants")
+
+data_ends.birth <- df.birth %>%
+  group_by(Entity) %>%
+  top_n(1, Year) 
+
+p2 <- df.birth %>%
+  ggplot(aes(x = Year, y = fertility_rate_hist, color = Entity)) +
+  geom_line(linewidth = 1) +
+  geom_text_repel(aes(label = Code), data = data_ends.birth, size = 4, nudge_x = 1) +
+  theme_minimal() +
+  theme(
+    legend.position     = "none",
+    legend.title        = element_blank(),
+    panel.grid.minor    = element_blank(),
+    panel.grid.major.x  = element_blank(),
+    plot.margin = unit(c(0, 0, 0, 0), "null"),
+    panel.margin = unit(c(0, 0, 0, 0), "null"),
+    plot.subtitle       = element_text(color = "grey50"),
+    plot.caption        = element_text(color = "grey70")) +
+  scale_y_continuous(
+    breaks = seq(0, 2.5, by=.5), 
+    limits = c(0, 2.5)) +
+  labs( x        = " ", 
+        y        = " ",
+        title    = "Total fertility rate",
+        subtitle = "Number of births per woman",
+        caption  = "ourworldindata.org/grapher/children-born-per-woman")
+
+ p1 + p2
 
 ```
 
 
-#  {#slide2-id data-menu-title="Background"}
 
-:::: columns
-
-::: {.column style="width: 50%;"}
-![](../images/marriage-rate.png)
-
-:::
-
-::: {.column style="width: 50%;"}
-![](../images/birth-rate.png)
-
-:::
-
-::::
-
-
-## Possible Selves {#slide3-id background-image="../images/future.png" background-size="contain" data-menu-title="Gap"}
-
+##  {#slide3-id background-image="images/future.png" background-size="contain" data-menu-title="Future Selves"}
 
 ##  {#slide4-id data-menu-title="Research Questions"}
 
 <h3>Research Questions</h3>
 
 ::: {.incremental .highlight-last}
-1.  Are there changes in youth's views of their possible selves as spouses, parents, and workers?\
+1.  Are there changes in youth's views of their future selves as spouses, parents, and workers?\
 2.  Do these projected future selves vary by gender?\
 :::
 
@@ -112,23 +168,43 @@ Monitoring the Future Surveys 1976-2023
 <https://www.icpsr.umich.edu/web/ICPSR/series/35>
 :::
 
-#  {#slide6-id data-menu-title="Dependent Variables" background-image="../images/questionmark-gray.png" background-size="100px" background-repeat="repeat"}
+#  {#slide6-id data-menu-title="Dependent Variables" background-image="images/questionmark-gray.png" background-size="100px" background-repeat="repeat"}
 
-These next questions ask you to guess how well you might do in several different situations. 
+These next questions ask you to guess how well you might do in several different situations.
+
+
+::::: columns
+
+:::: {.column width="60%"}
+**How good do you think you would be as a**:
 
 ::: {style="color: #e74c3c; font-size: 150%; font-family: 'Shadows Into Light'"}
-**How good do you think you would be as a:**
-
-1.  husband or wife?
-2.  parent?
-3.  worker on a job?
+-   husband or wife?
+-   parent?
+-   worker on a job?
 :::
+::::
 
-<br>
+::: {.column width="40%"}
 
-::: {style="font-size: 90%;"}
-**Response options**: (1) poor (2) not so good (3) fairly good (4) good (5) very good
+::: {style="font-size: 75%;"}
+
+<br>  
+
+**Response options**:
+
+1.  poor
+
+2.  not so good
+
+3.  fairly good
+
+4.  good
+
+5.  very good\
 :::
+:::
+:::::
 
 # Key IVs {#slide7-id data-menu-title="Independent Variables"}
 
@@ -136,7 +212,7 @@ These next questions ask you to guess how well you might do in several different
 -   Year^2^
 -   Gender
 
-# {#slide8-id data-menu-title="Sample"}
+#  {#slide8-id data-menu-title="Sample"}
 
 <h3>Weighted statistics of the pooled sample</h3>
 
@@ -169,9 +245,9 @@ mtf_svy %>%
 
 # Findings {#slide9-id data-menu-title="Results"}
 
-## {#slide10-id data-menu-title="Figure 1"}
+##  {#slide10-id data-menu-title="Figure 1"}
 
-'How good do you think you would be as a _________'
+'How good do you think you would be as a \_\_\_\_\_\_\_\_\_'
 
 ```{r warning = FALSE}
 
@@ -257,9 +333,9 @@ p1
 Monitoring the Future 12th Grade Surveys (1976-2023)
 :::
 
-## {#slide11-id data-menu-title="Figure 2"}
+##  {#slide11-id data-menu-title="Figure 2"}
 
-'How good do you think you would be as a _________'
+'How good do you think you would be as a \_\_\_\_\_\_\_\_\_'
 
 ```{r warning = FALSE}
 polr2.sp.RS  <- polr(gdsp ~ year.c * sex + I(year.c^2) * sex +
@@ -336,10 +412,9 @@ Monitoring the Future 12th Grade Surveys (1976-2023)
 
 ## Implications {#slide12-id data-menu-title="Implications"}
 
-
 # Thank you!
 
-::: columns
+::::: columns
 ::: {.column width="65%"}
 Joanna R. Pepin\
 *University of Toronto*
@@ -352,7 +427,6 @@ Melissa A. Milkie\
 
 ::: {.column width="35%"}
 [***Slides:***]{style="color: #E74C3C;"}\
-QR code will go here 
-![](../images/qr-code.png){fig-align="center" width="100%"}
+QR code will go here ![](images/qr-code.png){fig-align="center" width="100%"}
 :::
-:::
+:::::

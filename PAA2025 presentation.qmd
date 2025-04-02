@@ -13,6 +13,8 @@ format:
     controls: true
     theme: [default, custom.scss]
     slide-number: c
+    width: 1280 # default: 970
+    height: 800 # default: 700
 embed-resources: true
 project:
   execute-dir: MTF_Possible-Selves
@@ -28,10 +30,10 @@ include-in-header:
         font-size: 2.00em;
       }
       </style>
-# title-slide-attributes: 
-#       data-background-image: images/qr-code.png
-#       data-background-size: 200px
-#       data-background-position: "95% 95%"
+title-slide-attributes: 
+       data-background-image: images/qr-code.png
+       data-background-size: 250px
+       data-background-position: "100% 100%"
 ---
 
 ```{r warning = FALSE, error = FALSE, message = FALSE, echo=FALSE, results='hide'}
@@ -53,12 +55,9 @@ source(file.path("scripts/PS_01_measures and sample.R"))
 
 ```
 
-#  {#slide2-id data-menu-title="Background" }
+#  {#slide2-id data-menu-title="Background"}
 
-```{r}
-#| warning: false
-#| fig-width: 9
-#| fig-asp: .618
+```{r warning = FALSE, fig.width=14, fig.asp=.55}
 
 library(tidyverse)
 library(jsonlite)
@@ -76,9 +75,9 @@ data_ends.mar <- df.mar %>%
 
 p1 <- df.mar %>%
   ggplot(aes(x = Year, y = marriage_rate, color = Entity)) +
-  geom_line(linewidth = 1) +
-  geom_text_repel(aes(label = Code), data = data_ends.mar, size = 4, nudge_x = 1) +
-  theme_minimal() +
+  geom_line(linewidth = 2) +
+  geom_text_repel(aes(label = Code), data = data_ends.mar, size = 6, nudge_x = 1, nudge_y = -.5) +
+  theme_minimal(24) +
   theme(
     legend.position     = "none",
     legend.title        = element_blank(),
@@ -86,11 +85,12 @@ p1 <- df.mar %>%
     panel.grid.major.x  = element_blank(),
     plot.margin = unit(c(0, 0, 0, 0), "null"),
     panel.margin = unit(c(0, 0, 0, 0), "null"),
-    plot.subtitle       = element_text(color = "grey50"),
-    plot.caption        = element_text(color = "grey70")) +
+    plot.subtitle       = element_text(color = "grey50", size = 16),
+    plot.caption        = element_text(color = "grey70", size = 14)) +
   scale_y_continuous(
     breaks = seq(0, 12, by=2), 
     limits = c(0, 12)) +
+  scale_color_manual(values = c("#e74c3c", "#3498DB")) +
   labs( x        = " ", 
         y        = " ",
         title    = "Marriage rates",
@@ -103,9 +103,9 @@ data_ends.birth <- df.birth %>%
 
 p2 <- df.birth %>%
   ggplot(aes(x = Year, y = fertility_rate_hist, color = Entity)) +
-  geom_line(linewidth = 1) +
-  geom_text_repel(aes(label = Code), data = data_ends.birth, size = 4, nudge_x = 1) +
-  theme_minimal() +
+  geom_line(linewidth = 2) +
+  geom_text_repel(aes(label = Code), data = data_ends.birth, size = 6, nudge_x = 1.5) +
+  theme_minimal(24) +
   theme(
     legend.position     = "none",
     legend.title        = element_blank(),
@@ -113,11 +113,12 @@ p2 <- df.birth %>%
     panel.grid.major.x  = element_blank(),
     plot.margin = unit(c(0, 0, 0, 0), "null"),
     panel.margin = unit(c(0, 0, 0, 0), "null"),
-    plot.subtitle       = element_text(color = "grey50"),
-    plot.caption        = element_text(color = "grey70")) +
+    plot.subtitle       = element_text(color = "grey50", size = 16),
+    plot.caption        = element_text(color = "grey70", size = 14)) +
   scale_y_continuous(
     breaks = seq(0, 2.5, by=.5), 
     limits = c(0, 2.5)) +
+  scale_color_manual(values = c("#e74c3c", "#3498DB")) +
   labs( x        = " ", 
         y        = " ",
         title    = "Total fertility rate",
@@ -128,17 +129,13 @@ p2 <- df.birth %>%
 
 ```
 
-
-
 ##  {#slide3-id background-image="images/future.png" background-size="contain" data-menu-title="Future Selves"}
 
-##  {#slide4-id data-menu-title="Research Questions"}
+## Research Questions {#slide4-id data-menu-title="Research Questions" background-image="images/questionmark-gray.png" background-size="100px" background-repeat="repeat"}
 
-<h3>Research Questions</h3>
-
-::: {.incremental .highlight-last}
-1.  Are there changes in youth's views of their future selves as spouses, parents, and workers?\
-2.  Do these projected future selves vary by gender?\
+::: {.incremental .highlight-last style="font-size: 150%"}
+1.  Are there **changes** in youth's views of their future selves as spouses, parents, and workers?\
+2.  Do these projected future selves vary by **gender**?\
 :::
 
 :::: {.content-visible when-profile="speaker"}
@@ -151,14 +148,12 @@ Second RQ \[read it\]\
 :::
 ::::
 
-# MTF {#slide5-id data-menu-title="Data"}
-
-Monitoring the Future Surveys 1976-2023
+# Monitoring the Future Surveys (1976-2023) {#slide5-id data-menu-title="Data"}
 
 <hr>
 
-*nationally representative sample of U.S. 12th-graders*\
-[N = 99,399]{style="color: #E74C3C;"}
+[*Nationally representative sample of U.S. 12th-graders*]{style="color: #E74C3C;"}\
+N = 99,399
 
 <br>\
 <br>\
@@ -168,28 +163,24 @@ Monitoring the Future Surveys 1976-2023
 <https://www.icpsr.umich.edu/web/ICPSR/series/35>
 :::
 
-#  {#slide6-id data-menu-title="Dependent Variables" background-image="images/questionmark-gray.png" background-size="100px" background-repeat="repeat"}
+##  {#slide6-id data-menu-title="Dependent Variables"}
 
 These next questions ask you to guess how well you might do in several different situations.
+**How good do you think you would be as a**:  
 
+<br>  
 
-::::: columns
-
+::::::: columns
 :::: {.column width="60%"}
-**How good do you think you would be as a**:
-
 ::: {style="color: #e74c3c; font-size: 150%; font-family: 'Shadows Into Light'"}
--   husband or wife?
--   parent?
--   worker on a job?
+-   **husband or wife?**
+-   **parent?**
+-   **worker on a job?**
 :::
 ::::
 
-::: {.column width="40%"}
-
+:::: {.column width="40%"}
 ::: {style="font-size: 75%;"}
-
-<br>  
 
 **Response options**:
 
@@ -203,18 +194,26 @@ These next questions ask you to guess how well you might do in several different
 
 5.  very good\
 :::
-:::
-:::::
+::::
+:::::::
 
-# Key IVs {#slide7-id data-menu-title="Independent Variables"}
+## Key IVs {#slide7-id data-menu-title="Independent Variables"}
+
+::::: columns
+::: {.column width="30%"}
 
 -   Year
 -   Year^2^
 -   Gender
+:::
 
-#  {#slide8-id data-menu-title="Sample"}
+::: {.column width="70%"}
+![](images/time+gender.png){fig-align="center" width="100%"}
 
-<h3>Weighted statistics of the pooled sample</h3>
+:::
+:::::
+
+## Sample {#slide8-id data-menu-title="Sample"}
 
 ```{r results = 'asis', warning = FALSE}
 mtf_svy %>%
@@ -240,14 +239,16 @@ mtf_svy %>%
     label  = '**Variable**',
     all_stat_cols() ~ "**{level}**  
     N = {style_number(n_unweighted)} ({style_percent(p)}%)") %>%
-  modify_footnote(c(all_stat_cols()) ~ NA)
+  modify_footnote(c(all_stat_cols()) ~ NA) %>%
+  as_gt() %>%
+  gt::tab_options(table.font.size = 30)
 ```
 
 # Findings {#slide9-id data-menu-title="Results"}
 
 ##  {#slide10-id data-menu-title="Figure 1"}
 
-'How good do you think you would be as a \_\_\_\_\_\_\_\_\_'
+How good do you think you would be as a \_\_\_\_\_\_\_\_\_  
 
 ```{r warning = FALSE}
 
@@ -283,61 +284,79 @@ df_pp$cat <- factor(df_pp$cat,
                              "Spouse", 
                              "Parent"))
 
+```
+
+::: {.r-stack}
+
+::: {.fragment}
+
+```{r warning = FALSE, fig.width=14, fig.asp=.55}
+
 lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
 
-
-p1_very <- df_pp %>%
+df_pp %>%
   filter(response.level == "Very good") %>%
   ggplot(aes(x = x, y = predicted, color = cat, 
              ymin = conf.low, ymax = conf.high)) +
-  geom_line(linewidth = 1) +
+  geom_line(linewidth = 2.5) +
   facet_wrap(~response.level) +
-  theme_minimal() + 
+  theme_minimal(30) + 
   theme(#legend.position = c(1, 0),
     #legend.justification = c(1, 0),
-    legend.position = "top",
+    legend.position = "right",
     legend.title=element_blank(),
     strip.text.x = element_text(face = "bold"),
     panel.grid.minor = element_blank()) +
   scale_y_continuous(breaks = c(0., .25, .5, .75), limits=c(0, .75), labels = scales::percent) +
   scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
+  scale_color_manual(values = c("#e74c3c","#18BC9C", "#3498DB")) +
   labs( x        = " ", 
         y        = " ")
+```
 
-p1_other <- df_pp %>%
+:::
+
+::: {.fragment}
+
+```{r warning = FALSE, fig.width=14, fig.asp=.55}
+
+lables_year <- c("'76", "'92", "'08", "'23")
+
+df_pp %>%
   filter(response.level != "Very good") %>%
   ggplot(aes(x = x, y = predicted, color = cat, 
              ymin = conf.low, ymax = conf.high)) +
-  geom_line(linewidth = 1) +
+  geom_line(linewidth = 1.5) +
   facet_wrap(~response.level) +
-  theme_minimal() + 
+  theme_minimal(30) + 
   theme(#legend.position = c(1, 0),
     #legend.justification = c(1, 0),
-    legend.position = "none",
+    legend.position = "right",
     legend.title=element_blank(),
     strip.text.x = element_text(face = "bold"),
     panel.grid.minor = element_blank(),
     panel.spacing = unit(1.1, "cm", data = NULL)) +
   scale_y_continuous(breaks = c(0., .25, .5), limits=c(0, .5), labels = scales::percent) +
-  scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
+  scale_x_continuous(breaks=c(-20.55, -4.55, 11.45, 26.45), labels = lables_year) +
+  scale_color_manual(values = c("#e74c3c","#18BC9C", "#3498DB")) +
   labs( x        = " ", 
         y        = " ")
-
-## Combine plots
-p1 <- (p1_very | p1_other) + plot_layout(widths = c(1, 2)) 
-
-p1
 ```
+
+:::
+:::
 
 ::: aside
 Monitoring the Future 12th Grade Surveys (1976-2023)
 :::
 
+
 ##  {#slide11-id data-menu-title="Figure 2"}
 
-'How good do you think you would be as a \_\_\_\_\_\_\_\_\_'
+How good do you think you would be as a \_\_\_\_\_\_\_\_\_  
 
-```{r warning = FALSE}
+```{r warning = FALSE, fig.width=18, fig.asp=.5}
+
 polr2.sp.RS  <- polr(gdsp ~ year.c * sex + I(year.c^2) * sex +
                        momed + race + region,
                      data = data, weights = svyweight, Hess = T)
@@ -375,7 +394,7 @@ df_pp_sex$cat <- factor(df_pp_sex$cat,
                              "Parent",
                              "Worker"))
 
-lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
+lables_year <- c("'76", "'92", "'08", "'23")
 
 
 ## Draw figure
@@ -384,9 +403,9 @@ p2 <- df_pp_sex %>%
   ggplot(aes(x = x, y = predicted, color = response.level,
              ymin = conf.low, ymax = conf.high)) +
 #  geom_errorbar(width = 0.2, color="grey80") +
-  geom_line(aes(linetype = group), linewidth = 1) +
+  geom_line(aes(linetype = group), linewidth = 1.5) +
   facet_wrap(~cat) +
-  theme_minimal() +
+  theme_minimal(30) +
   theme(#legend.position = c(1, 0),
     #legend.justification = c(1, 0),
  #   plot.title = element_text(face = "bold"),
@@ -395,7 +414,8 @@ p2 <- df_pp_sex %>%
     panel.grid.minor = element_blank(),
     panel.spacing    = unit(1.1, "cm", data = NULL)) +
   scale_y_continuous(breaks = c(0., .25, .5, .75), limits=c(0, .75), labels = scales::percent) +
-  scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
+  scale_x_continuous(breaks=c(-20.55, -4.55, 11.45, 26.45), labels = lables_year) +
+  scale_color_manual(values = c("#18BC9C", "#3498DB", "#F39C12","#e74c3c","#2C3E50")) +
   labs( x        = " ", 
         y        = " ",
         color    = "Response level",
@@ -410,7 +430,7 @@ p2
 Monitoring the Future 12th Grade Surveys (1976-2023)
 :::
 
-## Implications {#slide12-id data-menu-title="Implications"}
+# Implications {#slide12-id data-menu-title="Implications"}
 
 # Thank you!
 
@@ -426,7 +446,6 @@ Melissa A. Milkie\
 :::
 
 ::: {.column width="35%"}
-[***Slides:***]{style="color: #E74C3C;"}\
-QR code will go here ![](images/qr-code.png){fig-align="center" width="100%"}
+![](images/qr-code.png){fig-align="center" width="100%"}
 :::
 :::::

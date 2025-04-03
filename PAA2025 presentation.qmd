@@ -71,11 +71,24 @@ library(tidyverse)
 library(jsonlite)
 library(ggrepel) 
 library(patchwork)
+library(statcanR) # get CAN data
 
 df.mar <- read.csv("https://ourworldindata.org/grapher/marriage-rate-per-1000-inhabitants.csv?v=1&csvType=filtered&useColumnShortNames=true&time=1970..latest&country=CAN~USA~SWE~KOR")
 
-df.birth <- read.csv("https://ourworldindata.org/grapher/children-born-per-woman.csv?v=1&csvType=filtered&useColumnShortNames=true&time=1970..latest&country=CAN~USA~SWE~KOR")
+CANdata <- statcan_data("39-10-0055-01", "eng") %>%
+  filter(Indicator == "Crude marriage rate" & GEO == "Canada") %>%
+  select(REF_DATE, VALUE) %>%
+  mutate(Year = stringr::str_sub(string = REF_DATE, start = 1, end = 4)) %>%
+  filter(Year >= 2009) %>%
+  rename(marriage_rate = VALUE) %>%
+  select(Year, marriage_rate)
 
+CANdata$Entity <- 'Canada'
+CANdata$Code   <- 'CAN'
+
+df.mar <- rbind(df.mar, CANdata) %>% 
+  arrange(Entity) %>%
+  mutate(Year = as.integer(Year))
 
 data_ends.mar <- df.mar %>%
   group_by(Entity) %>%
@@ -104,6 +117,9 @@ p1 <- df.mar %>%
         title    = "Marriage rates",
         subtitle = "Number of marriages during a given year per 1,000 people",
         caption  = "ourworldindata.org/grapher/marriage-rate-per-1000-inhabitants")
+
+df.birth <- read.csv("https://ourworldindata.org/grapher/children-born-per-woman.csv?v=1&csvType=filtered&useColumnShortNames=true&time=1970..latest&country=CAN~USA~SWE~KOR")
+
 
 data_ends.birth <- df.birth %>%
   group_by(Entity) %>%

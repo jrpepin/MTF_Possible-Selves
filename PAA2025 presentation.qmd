@@ -32,7 +32,7 @@ include-in-header:
       </style>
 title-slide-attributes: 
        data-background-image: images/qr-code-leaf.png
-       data-background-size: 400px
+       data-background-size: "25%"
        data-background-position: "100% 100%"
 ---
 

@@ -294,7 +294,7 @@ df_pp$cat <- factor(df_pp$cat,
 
 lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
 
-df_pp %>%
+p <- df_pp %>%
   filter(response.level == "Very good") %>%
   ggplot(aes(x = x, y = predicted, color = cat, 
              ymin = conf.low, ymax = conf.high)) +
@@ -312,6 +312,8 @@ df_pp %>%
   scale_color_manual(values = c("#e74c3c","#18BC9C", "#3498DB")) +
   labs( x        = " ", 
         y        = " ")
+
+[p](https://github.com/jrpepin/MTF_Possible-Selves/blob/main/output/figs/averages.png)
 ```
 
 :::

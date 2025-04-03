@@ -55,6 +55,14 @@ source(file.path("scripts/PS_01_measures and sample.R"))
 
 ```
 
+
+::: {.content-visible when-profile="speaker"}
+::: notes
+Acknowledge scholars not able to safely be here today.
+:::
+:::
+
+
 #  {#slide2-id data-menu-title="Background"}
 
 ```{r warning = FALSE, fig.width=14, fig.asp=.55}
@@ -76,7 +84,7 @@ data_ends.mar <- df.mar %>%
 p1 <- df.mar %>%
   ggplot(aes(x = Year, y = marriage_rate, color = Entity)) +
   geom_line(linewidth = 2) +
-  geom_text_repel(aes(label = Code), data = data_ends.mar, size = 6, nudge_x = 1, nudge_y = -.5) +
+  geom_text_repel(aes(label = Code), data = data_ends.mar, size = 6, nudge_x = 2.5) +
   theme_minimal(24) +
   theme(
     legend.position     = "none",
@@ -104,7 +112,7 @@ data_ends.birth <- df.birth %>%
 p2 <- df.birth %>%
   ggplot(aes(x = Year, y = fertility_rate_hist, color = Entity)) +
   geom_line(linewidth = 2) +
-  geom_text_repel(aes(label = Code), data = data_ends.birth, size = 6, nudge_x = 1.5) +
+  geom_text_repel(aes(label = Code), data = data_ends.birth, size = 6, nudge_x = 2.5) +
   theme_minimal(24) +
   theme(
     legend.position     = "none",
@@ -129,7 +137,33 @@ p2 <- df.birth %>%
 
 ```
 
+
+::: {.content-visible when-profile="speaker"}
+::: notes
+-    Worry about declining rates.  
+-    Lots of research on expectations or ideals.  
+-    Contribution: future self  
+:::
+:::
+
+
 ##  {#slide3-id background-image="images/future.png" background-size="contain" data-menu-title="Future Selves"}
+
+**Contributions**  
+
+::: {.incremental .highlight-last}
+-    norms + structure  
+-    young adulthood  
+-    caregiving roles  
+:::
+
+
+::: {.content-visible when-profile="speaker"}
+::: notes
+-    merge cultural norms and structural constraints  
+-    young adulthood for "imprinting" the future (Mannheim)  
+:::
+:::
 
 ## Research Questions {#slide4-id data-menu-title="Research Questions" background-image="images/questionmark-gray.png" background-size="100px" background-repeat="repeat"}
 
@@ -290,26 +324,30 @@ df_pp$cat <- factor(df_pp$cat,
 
 ::: {.fragment}
 
-```{r warning = FALSE, fig.width=14, fig.asp=.55}
+```{r warning = FALSE, fig.width=11, fig.asp=.65}
 
-lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
+lables_year <- c("'76", "'92", "'08", "'23")
+
+
+df_pp$cat <- factor(df_pp$cat,
+                     levels = c("Spouse", "Parent", "Worker"), ordered = F)
 
 df_pp %>%
   filter(response.level == "Very good") %>%
   ggplot(aes(x = x, y = predicted, color = cat, 
              ymin = conf.low, ymax = conf.high)) +
   geom_line(linewidth = 2.5) +
-  facet_wrap(~response.level) +
+  facet_wrap(~cat) +
   theme_minimal(30) + 
   theme(#legend.position = c(1, 0),
     #legend.justification = c(1, 0),
-    legend.position = "right",
-    legend.title=element_blank(),
-    strip.text.x = element_text(face = "bold"),
-    panel.grid.minor = element_blank()) +
+    legend.position     = "none",
+    legend.title        = element_blank(),
+    strip.text.x        = element_text(face = "bold"),
+    panel.grid.minor    = element_blank()) +
   scale_y_continuous(breaks = c(0., .25, .5, .75), limits=c(0, .75), labels = scales::percent) +
-  scale_x_continuous(breaks=c(-20.55, -11.55, -1.55, 8.45, 18.14, 26.45), labels = lables_year) +
-  scale_color_manual(values = c("#e74c3c","#18BC9C", "#3498DB")) +
+  scale_x_continuous(breaks = c(-20.55, -4.55, 11.45, 26.45), labels = lables_year) +
+  scale_color_manual(values = c("#18BC9C", "#3498DB", "#e74c3c")) +
   labs( x        = " ", 
         y        = " ")
 
@@ -339,7 +377,7 @@ df_pp %>%
     panel.spacing = unit(1.1, "cm", data = NULL)) +
   scale_y_continuous(breaks = c(0., .25, .5), limits=c(0, .5), labels = scales::percent) +
   scale_x_continuous(breaks=c(-20.55, -4.55, 11.45, 26.45), labels = lables_year) +
-  scale_color_manual(values = c("#e74c3c","#18BC9C", "#3498DB")) +
+  scale_color_manual(values = c("#18BC9C", "#3498DB", "#e74c3c")) +
   labs( x        = " ", 
         y        = " ")
 ```

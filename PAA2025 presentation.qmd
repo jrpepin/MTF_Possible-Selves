@@ -1,5 +1,5 @@
 ---
-title: "Change in Future Selves:"  
+title: "Social Change in Future Selves:"  
 subtitle: "A Portrait of Youths’ Views of Themselves in Adult Caring Roles"
 author: 
   - name: "<br> Joanna R. Pepin"
@@ -32,7 +32,7 @@ include-in-header:
       </style>
 title-slide-attributes: 
        data-background-image: images/qr-code-leaf.png
-       data-background-size: 450px
+       data-background-size: 400px
        data-background-position: "100% 100%"
 ---
 
@@ -294,7 +294,7 @@ df_pp$cat <- factor(df_pp$cat,
 
 lables_year <- c("1976", "1985", "1995", "2005", "2015", "2023")
 
-p <- df_pp %>%
+df_pp %>%
   filter(response.level == "Very good") %>%
   ggplot(aes(x = x, y = predicted, color = cat, 
              ymin = conf.low, ymax = conf.high)) +
@@ -313,7 +313,6 @@ p <- df_pp %>%
   labs( x        = " ", 
         y        = " ")
 
-[p](https://github.com/jrpepin/MTF_Possible-Selves/blob/main/output/figs/averages.png)
 ```
 
 :::

@@ -1,5 +1,5 @@
 ---
-title: "Social Change in Future Selves:"  
+title: "Change in Future Selves:"  
 subtitle: "A Portrait of Youths’ Views of Themselves in Adult Caring Roles"
 author: 
   - name: "<br> Joanna R. Pepin"
@@ -31,8 +31,8 @@ include-in-header:
       }
       </style>
 title-slide-attributes: 
-       data-background-image: images/qr-code.png
-       data-background-size: 300px
+       data-background-image: images/qr-code-leaf.png
+       data-background-size: 450px
        data-background-position: "100% 100%"
 ---
 
@@ -446,6 +446,6 @@ Melissa A. Milkie\
 :::
 
 ::: {.column width="35%"}
-![](images/qr-code.png){fig-align="center" width="100%"}
+![](images/qr-code-leaf.png){fig-align="center" width="100%"}
 :::
 :::::

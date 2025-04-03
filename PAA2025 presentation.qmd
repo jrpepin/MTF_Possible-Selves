@@ -340,7 +340,11 @@ df_pp$cat <- factor(df_pp$cat,
 
 ::: {.fragment}
 
-```{r warning = FALSE, fig.width=11, fig.asp=.65}
+::: {style="color: #grey70; font-size: 75%;"}
+*% who think they will be 'very good'*
+:::
+
+```{r warning = FALSE, fig.width=11, fig.asp=.60}
 
 lables_year <- c("'76", "'92", "'08", "'23")
 
@@ -490,7 +494,10 @@ Monitoring the Future 12th Grade Surveys (1976-2023)
 # Thank you!
 
 ::::: columns
-::: {.column width="65%"}
+::: {.column width="50%"}
+
+<br>  
+
 Joanna R. Pepin\
 *University of Toronto*
 
@@ -500,7 +507,7 @@ Melissa A. Milkie\
 *University of Toronto*
 :::
 
-::: {.column width="35%"}
+::: {.column width="50%"}
 ![](images/qr-code-leaf.png){fig-align="center" width="100%"}
 :::
 :::::

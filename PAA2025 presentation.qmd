@@ -55,13 +55,13 @@ source(file.path("scripts/PS_01_measures and sample.R"))
 
 ```
 
-
-::: {.content-visible when-profile="speaker"}
+:::: {.content-visible when-profile="speaker"}
 ::: notes
-Acknowledge scholars not able to safely be here today.
+Always a privilege to be here.\
+More salient fact than usual.\
+Acknowledge not all scholars are safely able to attend this year.
 :::
-:::
-
+::::
 
 #  {#slide2-id data-menu-title="Background"}
 
@@ -153,33 +153,48 @@ p2 <- df.birth %>%
 
 ```
 
-
-::: {.content-visible when-profile="speaker"}
+:::: {.content-visible when-profile="speaker"}
 ::: notes
--    Worry about declining rates.  
--    Lots of research on expectations or ideals.  
--    Contribution: future self  
+-   Demographic research documented declining rates in marriage/fertility.\
+-   SDT suggests a shift in values from traditional to individualistic norms precedes these behaviors.  
+-   Another line of research:  economic forces account for some behavior.  
+-   Lots of research on changes in ideals and expectations to get at both of these explanations in different ways.\
 :::
-:::
-
+::::
 
 ##  {#slide3-id background-image="images/future.png" background-size="contain" data-menu-title="Future Selves"}
 
-**Contributions**  
+**Contributions**
 
 ::: {.incremental .highlight-last}
--    norms + structure  
--    young adulthood  
--    caregiving roles  
+-   norms + structure []{style="color: #grey70; font-size: 50%"}\
+-   young adulthood [Elder (2018); Mannheim (1952)]{style="color: #grey70; font-size: 50%"}\
+-   caregiving ambitions [Bear 2019]{style="color: #grey70; font-size: 50%"}\
 :::
 
-
-::: {.content-visible when-profile="speaker"}
+:::: {.content-visible when-profile="speaker"}
 ::: notes
--    merge cultural norms and structural constraints  
--    young adulthood for "imprinting" the future (Mannheim)  
+-   contribution: views of future self.  
+-   ask youth to guess how they foresee their adulthood. 
+-   interested in adolescents’ positivity about future selves  
+-   how youth think about their potential as good spouses, parents, and workers  
+[**\<click\>**]{style="color: #E74C3C;"}\
+We argue conceptions of future selves are shaped by  
+-   structural contexts (rising inequality + anxiety) in which individuals live  
+-   societal norms and values (SDT + intensive parenting) that influence individual aspirations  
+changes in work and family roles, technology, and globalization -> suggest change in youth's projection of future self.  
+[**\<click\>**]{style="color: #E74C3C;"}\
+-   young adulthood for "imprinting" the future\
+-  understandings of who they are, their motivation toward taking steps to fulfill goals, and their health and wellbeing  
+[**\<click\>**]{style="color: #E74C3C;"}\
+-   caregiving ambition framework proposes that motivation to give care, across a variety of contexts and over the lifespan, are central to understanding life goals and ultimately behavior  
+-   often think of caring for child or someone with a disability.  
+-   we argue should expand to include caring for one's spouse  
+-   and in-direct caregiving through monetary support  
+-   look at caregiving in 3 roles: spouse, parent, worker  
+-   strong, pervasive cultural model of the man provider—woman homemaker work-family arrangement, gender differences in beliefs about future selves in these caring roles may be evident  
 :::
-:::
+::::
 
 ## Research Questions {#slide4-id data-menu-title="Research Questions" background-image="images/questionmark-gray.png" background-size="100px" background-repeat="repeat"}
 
@@ -213,12 +228,20 @@ N = 99,399
 <https://www.icpsr.umich.edu/web/ICPSR/series/35>
 :::
 
+:::: {.content-visible when-profile="speaker"}
+::: notes
+study changes in the beliefs, attitudes, and behavior of young people in the United States.  
+research grants from the National Institute on Drug Abuse, a part of NIH.  
+:::
+::::
+
+
 ##  {#slide6-id data-menu-title="Dependent Variables"}
 
 These next questions ask you to guess how well you might do in several different situations.
-**How good do you think you would be as a**:  
+**How good do you think you would be as a**:
 
-<br>  
+<br>
 
 ::::::: columns
 :::: {.column width="60%"}
@@ -231,7 +254,6 @@ These next questions ask you to guess how well you might do in several different
 
 :::: {.column width="40%"}
 ::: {style="font-size: 75%;"}
-
 **Response options**:
 
 1.  poor
@@ -247,11 +269,16 @@ These next questions ask you to guess how well you might do in several different
 ::::
 :::::::
 
+:::: {.content-visible when-profile="speaker"}
+::: notes
+question prompt.  
+:::
+::::
+
 ## Key IVs {#slide7-id data-menu-title="Independent Variables"}
 
 ::::: columns
 ::: {.column width="30%"}
-
 -   Year
 -   Year^2^
 -   Gender
@@ -259,9 +286,17 @@ These next questions ask you to guess how well you might do in several different
 
 ::: {.column width="70%"}
 ![](images/time+gender.png){fig-align="center" width="100%"}
-
 :::
 :::::
+
+:::: {.content-visible when-profile="speaker"}
+::: notes
+RQ1: changes over time: year  
+nonlinearity: year squared.
+
+RQ2: gender & year interaction
+:::
+::::
 
 ## Sample {#slide8-id data-menu-title="Sample"}
 
@@ -294,11 +329,17 @@ mtf_svy %>%
   gt::tab_options(table.font.size = 30)
 ```
 
+:::: {.content-visible when-profile="speaker"}
+::: notes
+descriptive statistics of the sample.  
+Also include these variables in our full models.  
+:::
+::::
+
+
 # Findings {#slide9-id data-menu-title="Results"}
 
 ##  {#slide10-id data-menu-title="Figure 1"}
-
-How good do you think you would be as a \_\_\_\_\_\_\_\_\_  
 
 ```{r warning = FALSE}
 
@@ -336,15 +377,11 @@ df_pp$cat <- factor(df_pp$cat,
 
 ```
 
-::: {.r-stack}
+::: r-stack
 
-::: {.fragment}
+:::: {.fragment}
 
-::: {style="color: #grey70; font-size: 75%;"}
-*% who think they will be 'very good'*
-:::
-
-```{r warning = FALSE, fig.width=11, fig.asp=.60}
+```{r warning = FALSE, fig.width=14, fig.asp=.6}
 
 lables_year <- c("'76", "'92", "'08", "'23")
 
@@ -369,15 +406,16 @@ df_pp %>%
   scale_x_continuous(breaks = c(-20.55, -4.55, 11.45, 26.45), labels = lables_year) +
   scale_color_manual(values = c("#18BC9C", "#3498DB", "#e74c3c")) +
   labs( x        = " ", 
-        y        = " ")
+        y        = " ",
+        title    = "% who think they will be 'very good' as a ____________")
 
 ```
 
-:::
+::::
 
-::: {.fragment}
+:::: {.fragment}
 
-```{r warning = FALSE, fig.width=14, fig.asp=.55}
+```{r warning = FALSE, fig.width=14, fig.asp=.6}
 
 lables_year <- c("'76", "'92", "'08", "'23")
 
@@ -399,22 +437,21 @@ df_pp %>%
   scale_x_continuous(breaks=c(-20.55, -4.55, 11.45, 26.45), labels = lables_year) +
   scale_color_manual(values = c("#18BC9C", "#3498DB", "#e74c3c")) +
   labs( x        = " ", 
-        y        = " ")
+        y        = " ",
+        title    = "% who think they will be '__________' as a ____________")
 ```
 
-:::
+::::
+
 :::
 
 ::: aside
-Monitoring the Future 12th Grade Surveys (1976-2023)
-:::
-
+Predicted % from ordinal logistic regression with year + year squared
+::: 
 
 ##  {#slide11-id data-menu-title="Figure 2"}
-
-How good do you think you would be as a \_\_\_\_\_\_\_\_\_  
-
-```{r warning = FALSE, fig.width=18, fig.asp=.5}
+  
+```{r warning = FALSE, fig.width=18, fig.asp=.55}
 
 polr2.sp.RS  <- polr(gdsp ~ year.c * sex + I(year.c^2) * sex +
                        momed + race + region,
@@ -442,16 +479,16 @@ df_pp_sex <- rbind(pp_wk_sex, pp_sp_sex, pp_pa_sex)
 
 ## Tidy variables
 df_pp_sex$response.level <- factor(df_pp_sex$response.level, 
-                               levels=c("Very good", 
-                                        "Good", 
-                                        "Fairly good", 
-                                        "Not so good", 
-                                        "Poor"))
+                                   levels=c("Very good", 
+                                            "Good", 
+                                            "Fairly good", 
+                                            "Not so good", 
+                                            "Poor"))
 
 df_pp_sex$cat <- factor(df_pp_sex$cat, 
-                    levels=c("Spouse", 
-                             "Parent",
-                             "Worker"))
+                        levels=c("Spouse", 
+                                 "Parent",
+                                 "Worker"))
 
 lables_year <- c("'76", "'92", "'08", "'23")
 
@@ -461,13 +498,13 @@ lables_year <- c("'76", "'92", "'08", "'23")
 p2 <- df_pp_sex %>%
   ggplot(aes(x = x, y = predicted, color = response.level,
              ymin = conf.low, ymax = conf.high)) +
-#  geom_errorbar(width = 0.2, color="grey80") +
+  #  geom_errorbar(width = 0.2, color="grey80") +
   geom_line(aes(linetype = group), linewidth = 1.5) +
   facet_wrap(~cat) +
   theme_minimal(30) +
   theme(#legend.position = c(1, 0),
     #legend.justification = c(1, 0),
- #   plot.title = element_text(face = "bold"),
+    #   plot.title = element_text(face = "bold"),
     legend.position  = "right",
     strip.text.x     = element_text(face = "bold"),
     panel.grid.minor = element_blank(),
@@ -478,7 +515,8 @@ p2 <- df_pp_sex %>%
   labs( x        = " ", 
         y        = " ",
         color    = "Response level",
-        linetype = " ") 
+        title    = "% who think they will be 'very good' as a ____________",
+        linetype = " ")
 
 p2
 
@@ -486,17 +524,28 @@ p2
 ```
 
 ::: aside
-Monitoring the Future 12th Grade Surveys (1976-2023)
+Predicted % from ordinal logistic regression with year, year^2, gender, mom's edu., race, & region
 :::
 
-# Implications {#slide12-id data-menu-title="Implications"}
+# Next Steps {#slide12-id data-menu-title="Implications"}
+
+::: {.fragment .custom .blur}  
+-   Expectations for marriage/parenthood  
+:::
+
+::: {.fragment .custom .blur}  
+-   Mom's education & racial identity  
+:::
+
+::: {.fragment .custom .blur}  
+-   Link with actual marriage/parenthood transitions  
+:::
 
 # Thank you!
 
 ::::: columns
 ::: {.column width="50%"}
-
-<br>  
+<br>
 
 Joanna R. Pepin\
 *University of Toronto*

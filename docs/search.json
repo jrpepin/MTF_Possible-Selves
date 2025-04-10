@@ -11,14 +11,14 @@
     "href": "PAA2025 presentation.html#slide10-id",
     "title": "Social Change in Future Selves:",
     "section": "",
-    "text": "How good do you think you would be as a _________\n\n\n\n% who think they will be ‘very good’\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMonitoring the Future 12th Grade Surveys (1976-2023)"
+    "text": "Predicted % from ordinal logistic regression with year + year squared"
   },
   {
     "objectID": "PAA2025 presentation.html#slide11-id",
     "href": "PAA2025 presentation.html#slide11-id",
     "title": "Social Change in Future Selves:",
     "section": "",
-    "text": "How good do you think you would be as a _________\n\n\n\n\n\n\n\n\n\n\n\nMonitoring the Future 12th Grade Surveys (1976-2023)"
+    "text": "Predicted % from ordinal logistic regression with year, year^2, gender, mom’s edu., race, & region"
   },
   {
     "objectID": "PAA2025 presentation.html#slide12-id",
@@ -60,6 +60,6 @@
     "href": "PAA2025 presentation.html#slide3-id",
     "title": "Social Change in Future Selves:",
     "section": "",
-    "text": "Contributions\n\n\nnorms + structure\n\nyoung adulthood\n\ncaregiving roles"
+    "text": "Contributions\n\n\nnorms + structure \n\nyoung adulthood Elder (2018); Mannheim (1952)\n\ncaregiving ambitions Bear 2019"
   }
 ]

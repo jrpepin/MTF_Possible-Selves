@@ -145,3 +145,11 @@ $btn-close-hover-opacity:    1 !default;
   }
 }
 
+
+.reveal .slides section .fragment.blur {
+  filter: blur(5px);
+}
+
+.reveal .slides section .fragment.blur.visible {
+  filter: none
+}

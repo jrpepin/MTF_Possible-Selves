@@ -537,7 +537,7 @@ p2 <- df_pp_sex %>%
   labs( x        = " ", 
         y        = " ",
         color    = "Response level",
-        title    = "% who think they will be 'very good' as a ____________",
+        title    = "% who think they will be ' __________' as a ____________",
         linetype = " ")
 
 p2

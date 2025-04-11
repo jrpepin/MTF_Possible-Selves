@@ -4,21 +4,21 @@
     "href": "PAA2025 presentation.html#slide4-id",
     "title": "Social Change in Future Selves:",
     "section": "Research Questions",
-    "text": "Research Questions\n\n\nAre there changes in youth’s views of their future selves as spouses, parents, and workers?\n\nDo these projected future selves vary by gender?"
+    "text": "Research Questions\n\n\nAre there changes in youths’ views of their future selves as spouses, parents, and workers?\n\nDo these projected future selves vary by gender?"
   },
   {
     "objectID": "PAA2025 presentation.html#slide10-id",
     "href": "PAA2025 presentation.html#slide10-id",
     "title": "Social Change in Future Selves:",
     "section": "",
-    "text": "Predicted % from ordinal logistic regression with year + year squared"
+    "text": "Predicted % from ordinal logistic regression with year + year2"
   },
   {
     "objectID": "PAA2025 presentation.html#slide11-id",
     "href": "PAA2025 presentation.html#slide11-id",
     "title": "Social Change in Future Selves:",
     "section": "",
-    "text": "Predicted % from ordinal logistic regression with year, year^2, gender, mom’s edu., race, & region"
+    "text": "Predicted % from ordinal logistic regression with year, year2, gender, mom’s edu., race, & region"
   },
   {
     "objectID": "PAA2025 presentation.html#slide12-id",

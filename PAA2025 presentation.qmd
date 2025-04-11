@@ -55,13 +55,6 @@ source(file.path("scripts/PS_01_measures and sample.R"))
 
 ```
 
-:::: {.content-visible when-profile="speaker"}
-::: notes
-Always a privilege to be here.\
-More salient fact than usual.\
-Acknowledge not all scholars are safely able to attend this year.
-:::
-::::
 
 #  {#slide2-id data-menu-title="Background"}
 
@@ -175,14 +168,12 @@ p2 <- df.birth %>%
 :::: {.content-visible when-profile="speaker"}
 ::: notes
 -   contribution: views of future self.  
--   ask youth to guess how they foresee their adulthood. 
--   interested in adolescents’ positivity about future selves  
--   how youth think about their potential as good spouses, parents, and workers  
+-   interested in adolescents’ positivity in how they foresee their adulthood.  
+-   guess their potential as good spouses, parents, and workers  
 [**\<click\>**]{style="color: #E74C3C;"}\
-We argue conceptions of future selves are shaped by  
--   structural contexts (rising inequality + anxiety) in which individuals live  
--   societal norms and values (SDT + intensive parenting) that influence individual aspirations  
-changes in work and family roles, technology, and globalization -> suggest change in youth's projection of future self.  
+We argue future selves are shaped by:  
+-   structural contexts (rising inequality + anxiety + WFA + tech + globalization)  
+-   societal norms & values (SDT + intensive parenting) influence aspirations  
 [**\<click\>**]{style="color: #E74C3C;"}\
 -   young adulthood for "imprinting" the future\
 -  understandings of who they are, their motivation toward taking steps to fulfill goals, and their health and wellbeing  
@@ -192,14 +183,14 @@ changes in work and family roles, technology, and globalization -> suggest chang
 -   we argue should expand to include caring for one's spouse  
 -   and in-direct caregiving through monetary support  
 -   look at caregiving in 3 roles: spouse, parent, worker  
--   strong, pervasive cultural model of the man provider—woman homemaker work-family arrangement, gender differences in beliefs about future selves in these caring roles may be evident  
+  
 :::
 ::::
 
 ## Research Questions {#slide4-id data-menu-title="Research Questions" background-image="images/questionmark-gray.png" background-size="100px" background-repeat="repeat"}
 
 ::: {.incremental .highlight-last style="font-size: 150%"}
-1.  Are there **changes** in youth's views of their future selves as spouses, parents, and workers?\
+1.  Are there **changes** in youths' views of their future selves as spouses, parents, and workers?\
 2.  Do these projected future selves vary by **gender**?\
 :::
 
@@ -210,6 +201,7 @@ First RQ: \[read it\]\
 
 [**\<click\>**]{style="color: #E74C3C;"}\
 Second RQ \[read it\]\
+**man provider—woman homemaker**: gender differences  
 :::
 ::::
 
@@ -339,6 +331,18 @@ Also include these variables in our full models.
 
 # Findings {#slide9-id data-menu-title="Results"}
 
+:::: {.content-visible when-profile="speaker"}
+::: notes
+stepwise ordinal logistic regression models:  
+
+1.  year + year^2^  
+2.  added all control variables  
+3.  interacted year and gender.  
+
+show the predicted % rather than tables of coef.  
+:::
+::::
+
 ##  {#slide10-id data-menu-title="Figure 1"}
 
 ```{r warning = FALSE}
@@ -446,12 +450,30 @@ df_pp %>%
 :::
 
 ::: aside
-Predicted % from ordinal logistic regression with year + year squared
+Predicted % from ordinal logistic regression with year + year^2^  
 ::: 
+
+:::: {.content-visible when-profile="speaker"}
+::: notes
+
+[**\<click\>**]{style="color: #E74C3C;"}\
+-   predicted % of 'very good' in each role without controls.  
+-   45+ years, youth felt most confident about being a good worker  
+-   became more positive about all roles from mid-1970s through 2000.  
+-   stable until the mid-2000s, after less likely to believe 'very good' in these roles.   
+
+[**\<click\>**]{style="color: #E74C3C;"}\
+-   youth returned to seeing themselves as ‘good,’ and to a lesser extent ‘fairly good,’   
+-   unlikely to see themselves as ‘poor’ or ‘not so good’  
+
+Model 2: gender + control variables -- coefficients for year and year^2^ steady and remain statistically significant for all three adult roles, trends over time are robust.  
+
+:::
+::::
 
 ##  {#slide11-id data-menu-title="Figure 2"}
   
-```{r warning = FALSE, fig.width=18, fig.asp=.55}
+```{r warning = FALSE, fig.width=18, fig.asp=.6}
 
 polr2.sp.RS  <- polr(gdsp ~ year.c * sex + I(year.c^2) * sex +
                        momed + race + region,
@@ -524,8 +546,25 @@ p2
 ```
 
 ::: aside
-Predicted % from ordinal logistic regression with year, year^2, gender, mom's edu., race, & region
+Predicted % from ordinal logistic regression with year, year^2^, gender, mom's edu., race, & region
 :::
+
+:::: {.content-visible when-profile="speaker"}
+::: notes
+-   expectations of ‘very good’ **spouse & parent** increased for both for first 30 survey years  
+-   increases were steeper for young men than young women (p <.001).  
+-   gender gap largest in the mid 1970s & 1980s and narrowed over time.  
+-   In 2000s, ‘very good’ as a spouse or parent decreased for both young men and young women.  
+-   mid-2000s, increasingly likely to expect to be “good” or, to a lesser extent, “fairly good” spouse or parent.  
+  
+-   ‘very good’ **worker** showed different patterns for young men compared with young women.  
+-    About 65% of young men expected “very good” worker across all the survey years.  
+-    young women’s “very good” worker increased from 55% in 1976 to 68% by 2004, surpassing the proportions for young men.  
+-    young women’s expectations dropped thereafter, diminishing to 62% by 2023.  
+  
+Very few expected to be “poor” or “not so good” in all three adult roles across the survey years  
+:::
+::::
 
 # Next Steps {#slide12-id data-menu-title="Implications"}
 
@@ -540,6 +579,17 @@ Predicted % from ordinal logistic regression with year, year^2, gender, mom's ed
 ::: {.fragment .custom .blur}  
 -   Link with actual marriage/parenthood transitions  
 :::
+
+:::: {.content-visible when-profile="speaker"}
+::: notes
+[**\<click\>**]{style="color: #E74C3C;"}\
+-   MTF asked about mar/par expectations. Limit subsample or see if correlated.   
+[**\<click\>**]{style="color: #E74C3C;"}\
+-   Think about diversity in terms of class or racial identity. Somewhat limited in variables.  
+[**\<click\>**]{style="color: #E74C3C;"}\
+-   Restricted panel data until age 30. Did fulfill these roles?  
+:::
+::::
 
 # Thank you!
 
@@ -560,3 +610,9 @@ Melissa A. Milkie\
 ![](images/qr-code-leaf.png){fig-align="center" width="100%"}
 :::
 :::::
+
+:::: {.content-visible when-profile="speaker"}
+::: notes
+Thanks!
+:::
+::::
